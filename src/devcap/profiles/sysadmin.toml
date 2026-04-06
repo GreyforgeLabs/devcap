@@ -1,0 +1,98 @@
+[profile]
+name = "sysadmin"
+description = "Linux system administration toolkit"
+
+[services]
+system = ["sshd"]
+
+[[tools]]
+name = "curl"
+category = "Network"
+required = true
+
+[[tools]]
+name = "wget"
+category = "Network"
+
+[[tools]]
+name = "openssl"
+category = "Network"
+required = true
+
+[[tools]]
+name = "nmap"
+category = "Network"
+
+[[tools]]
+name = "nc"
+category = "Network"
+
+[[tools]]
+name = "socat"
+category = "Network"
+
+[[tools]]
+name = "jq"
+category = "Network"
+
+[[tools]]
+name = "git"
+category = "Version Control"
+required = true
+
+[[tools]]
+name = "vim"
+category = "Editors"
+
+[[tools]]
+name = "nano"
+category = "Editors"
+
+[[tools]]
+name = "tmux"
+category = "Miscellaneous"
+required = true
+
+[[tools]]
+name = "htop"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "btop"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "strace"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "perf"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "tree"
+category = "Search & Files"
+
+[[tools]]
+name = "fd"
+category = "Search & Files"
+
+[[tools]]
+name = "rg"
+category = "Search & Files"
+
+[[tools]]
+name = "shellcheck"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "docker"
+category = "Containers"
+
+[[tools]]
+name = "sqlite3"
+category = "Database"
+
+[[tools]]
+name = "python3"
+category = "Languages"

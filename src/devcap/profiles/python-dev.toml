@@ -1,0 +1,54 @@
+[profile]
+name = "python-dev"
+description = "Python development environment"
+
+[[tools]]
+name = "python3"
+category = "Languages"
+required = true
+
+[[tools]]
+name = "pip"
+category = "Package Managers"
+required = true
+
+[[tools]]
+name = "uv"
+category = "Package Managers"
+
+[[tools]]
+name = "git"
+category = "Version Control"
+required = true
+
+[[tools]]
+name = "ruff"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "mypy"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "pyright"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "black"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "isort"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "pytest"
+category = "Testing"
+
+[[tools]]
+name = "sqlite3"
+category = "Database"
+
+[[tools]]
+name = "docker"
+category = "Containers"

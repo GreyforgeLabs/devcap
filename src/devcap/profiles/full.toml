@@ -1,0 +1,432 @@
+[profile]
+name = "full"
+description = "Complete scan of all known tools and services"
+
+[services]
+system = ["sshd", "docker"]
+
+# Languages
+[[tools]]
+name = "python3"
+category = "Languages"
+
+[[tools]]
+name = "node"
+category = "Languages"
+
+[[tools]]
+name = "bun"
+category = "Languages"
+
+[[tools]]
+name = "rustc"
+category = "Languages"
+
+[[tools]]
+name = "go"
+category = "Languages"
+
+[[tools]]
+name = "java"
+category = "Languages"
+
+[[tools]]
+name = "ruby"
+category = "Languages"
+
+[[tools]]
+name = "php"
+category = "Languages"
+
+[[tools]]
+name = "perl"
+category = "Languages"
+
+[[tools]]
+name = "dotnet"
+category = "Languages"
+
+[[tools]]
+name = "deno"
+category = "Languages"
+
+[[tools]]
+name = "zig"
+category = "Languages"
+
+[[tools]]
+name = "elixir"
+category = "Languages"
+
+[[tools]]
+name = "swift"
+category = "Languages"
+
+# Package Managers
+[[tools]]
+name = "pip"
+category = "Package Managers"
+
+[[tools]]
+name = "uv"
+category = "Package Managers"
+
+[[tools]]
+name = "npm"
+category = "Package Managers"
+
+[[tools]]
+name = "yarn"
+category = "Package Managers"
+
+[[tools]]
+name = "pnpm"
+category = "Package Managers"
+
+[[tools]]
+name = "cargo"
+category = "Package Managers"
+
+[[tools]]
+name = "gem"
+category = "Package Managers"
+
+[[tools]]
+name = "apt"
+category = "Package Managers"
+
+[[tools]]
+name = "brew"
+category = "Package Managers"
+
+[[tools]]
+name = "flatpak"
+category = "Package Managers"
+
+[[tools]]
+name = "snap"
+category = "Package Managers"
+
+# Build Tools
+[[tools]]
+name = "make"
+category = "Build Tools"
+
+[[tools]]
+name = "cmake"
+category = "Build Tools"
+
+[[tools]]
+name = "meson"
+category = "Build Tools"
+
+[[tools]]
+name = "ninja"
+category = "Build Tools"
+
+[[tools]]
+name = "autoconf"
+category = "Build Tools"
+
+[[tools]]
+name = "automake"
+category = "Build Tools"
+
+[[tools]]
+name = "just"
+category = "Build Tools"
+
+# Version Control
+[[tools]]
+name = "git"
+category = "Version Control"
+
+[[tools]]
+name = "gh"
+category = "Version Control"
+
+[[tools]]
+name = "hg"
+category = "Version Control"
+
+[[tools]]
+name = "svn"
+category = "Version Control"
+
+# Containers
+[[tools]]
+name = "docker"
+category = "Containers"
+
+[[tools]]
+name = "docker-compose"
+category = "Containers"
+
+[[tools]]
+name = "podman"
+category = "Containers"
+
+[[tools]]
+name = "kubectl"
+category = "Containers"
+
+[[tools]]
+name = "helm"
+category = "Containers"
+
+[[tools]]
+name = "terraform"
+category = "Containers"
+
+[[tools]]
+name = "ansible"
+category = "Containers"
+
+# Editors
+[[tools]]
+name = "vim"
+category = "Editors"
+
+[[tools]]
+name = "nvim"
+category = "Editors"
+
+[[tools]]
+name = "nano"
+category = "Editors"
+
+[[tools]]
+name = "emacs"
+category = "Editors"
+
+[[tools]]
+name = "code"
+category = "Editors"
+
+# Linting & Formatting
+[[tools]]
+name = "ruff"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "shellcheck"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "shfmt"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "eslint"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "prettier"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "clang-format"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "rustfmt"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "mypy"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "pyright"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "yamllint"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "black"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "isort"
+category = "Linting & Formatting"
+
+# Testing
+[[tools]]
+name = "pytest"
+category = "Testing"
+
+[[tools]]
+name = "jest"
+category = "Testing"
+
+[[tools]]
+name = "vitest"
+category = "Testing"
+
+[[tools]]
+name = "playwright"
+category = "Testing"
+
+# Debugging & Profiling
+[[tools]]
+name = "gdb"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "lldb"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "strace"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "ltrace"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "valgrind"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "perf"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "htop"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "btop"
+category = "Debugging & Profiling"
+
+# Network
+[[tools]]
+name = "curl"
+category = "Network"
+
+[[tools]]
+name = "wget"
+category = "Network"
+
+[[tools]]
+name = "jq"
+category = "Network"
+
+[[tools]]
+name = "yq"
+category = "Network"
+
+[[tools]]
+name = "nmap"
+category = "Network"
+
+[[tools]]
+name = "nc"
+category = "Network"
+
+[[tools]]
+name = "websocat"
+category = "Network"
+
+[[tools]]
+name = "xh"
+category = "Network"
+
+[[tools]]
+name = "socat"
+category = "Network"
+
+[[tools]]
+name = "openssl"
+category = "Network"
+
+# Database
+[[tools]]
+name = "sqlite3"
+category = "Database"
+
+[[tools]]
+name = "psql"
+category = "Database"
+
+[[tools]]
+name = "mysql"
+category = "Database"
+
+[[tools]]
+name = "redis-cli"
+category = "Database"
+
+[[tools]]
+name = "mongosh"
+category = "Database"
+
+[[tools]]
+name = "duckdb"
+category = "Database"
+
+# Search & Files
+[[tools]]
+name = "rg"
+category = "Search & Files"
+
+[[tools]]
+name = "fd"
+category = "Search & Files"
+
+[[tools]]
+name = "fzf"
+category = "Search & Files"
+
+[[tools]]
+name = "bat"
+category = "Search & Files"
+
+[[tools]]
+name = "eza"
+category = "Search & Files"
+
+[[tools]]
+name = "tree"
+category = "Search & Files"
+
+[[tools]]
+name = "tokei"
+category = "Search & Files"
+
+[[tools]]
+name = "delta"
+category = "Search & Files"
+
+[[tools]]
+name = "sd"
+category = "Search & Files"
+
+# AI Tools
+[[tools]]
+name = "ollama"
+category = "AI Tools"
+
+[[tools]]
+name = "aider"
+category = "AI Tools"
+
+[[tools]]
+name = "claude"
+category = "AI Tools"
+
+# Miscellaneous
+[[tools]]
+name = "tmux"
+category = "Miscellaneous"
+
+[[tools]]
+name = "direnv"
+category = "Miscellaneous"
+
+[[tools]]
+name = "hyperfine"
+category = "Miscellaneous"

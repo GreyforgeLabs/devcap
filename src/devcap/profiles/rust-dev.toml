@@ -1,0 +1,50 @@
+[profile]
+name = "rust-dev"
+description = "Rust development environment"
+
+[[tools]]
+name = "rustc"
+category = "Languages"
+required = true
+
+[[tools]]
+name = "cargo"
+category = "Package Managers"
+required = true
+
+[[tools]]
+name = "rustfmt"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "git"
+category = "Version Control"
+required = true
+
+[[tools]]
+name = "make"
+category = "Build Tools"
+
+[[tools]]
+name = "cmake"
+category = "Build Tools"
+
+[[tools]]
+name = "gdb"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "lldb"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "valgrind"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "docker"
+category = "Containers"
+
+[[tools]]
+name = "tokei"
+category = "Search & Files"

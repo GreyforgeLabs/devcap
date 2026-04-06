@@ -1,0 +1,58 @@
+[profile]
+name = "node-dev"
+description = "Node.js / JavaScript development environment"
+
+[[tools]]
+name = "node"
+category = "Languages"
+required = true
+
+[[tools]]
+name = "npm"
+category = "Package Managers"
+required = true
+
+[[tools]]
+name = "yarn"
+category = "Package Managers"
+
+[[tools]]
+name = "pnpm"
+category = "Package Managers"
+
+[[tools]]
+name = "bun"
+category = "Languages"
+
+[[tools]]
+name = "deno"
+category = "Languages"
+
+[[tools]]
+name = "git"
+category = "Version Control"
+required = true
+
+[[tools]]
+name = "eslint"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "prettier"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "jest"
+category = "Testing"
+
+[[tools]]
+name = "vitest"
+category = "Testing"
+
+[[tools]]
+name = "playwright"
+category = "Testing"
+
+[[tools]]
+name = "docker"
+category = "Containers"

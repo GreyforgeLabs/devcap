@@ -1,0 +1,90 @@
+[profile]
+name = "devops"
+description = "DevOps and infrastructure toolchain"
+
+[services]
+system = ["sshd", "docker"]
+
+[[tools]]
+name = "docker"
+category = "Containers"
+required = true
+
+[[tools]]
+name = "docker-compose"
+category = "Containers"
+
+[[tools]]
+name = "podman"
+category = "Containers"
+
+[[tools]]
+name = "kubectl"
+category = "Containers"
+
+[[tools]]
+name = "helm"
+category = "Containers"
+
+[[tools]]
+name = "terraform"
+category = "Containers"
+
+[[tools]]
+name = "ansible"
+category = "Containers"
+
+[[tools]]
+name = "git"
+category = "Version Control"
+required = true
+
+[[tools]]
+name = "gh"
+category = "Version Control"
+
+[[tools]]
+name = "curl"
+category = "Network"
+required = true
+
+[[tools]]
+name = "jq"
+category = "Network"
+required = true
+
+[[tools]]
+name = "yq"
+category = "Network"
+
+[[tools]]
+name = "openssl"
+category = "Network"
+
+[[tools]]
+name = "python3"
+category = "Languages"
+
+[[tools]]
+name = "make"
+category = "Build Tools"
+
+[[tools]]
+name = "shellcheck"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "shfmt"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "yamllint"
+category = "Linting & Formatting"
+
+[[tools]]
+name = "htop"
+category = "Debugging & Profiling"
+
+[[tools]]
+name = "tmux"
+category = "Miscellaneous"
