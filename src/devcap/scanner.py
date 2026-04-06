@@ -33,8 +33,10 @@ class ToolResult:
 
     def to_dict(self) -> dict:
         d: dict = {
-            "name": self.name, "binary": self.binary,
-            "category": self.category, "found": self.found,
+            "name": self.name,
+            "binary": self.binary,
+            "category": self.category,
+            "found": self.found,
         }
         if self.found:
             d["version"] = self.version

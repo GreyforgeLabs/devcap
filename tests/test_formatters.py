@@ -13,16 +13,26 @@ def _make_scan() -> ScanResult:
         platform="Linux 6.0.0",
         results=[
             ToolResult(
-                name="python3", binary="python3", category="Languages",
-                found=True, version="3.12.3", path="/usr/bin/python3",
+                name="python3",
+                binary="python3",
+                category="Languages",
+                found=True,
+                version="3.12.3",
+                path="/usr/bin/python3",
             ),
             ToolResult(
-                name="rustc", binary="rustc", category="Languages",
+                name="rustc",
+                binary="rustc",
+                category="Languages",
                 found=False,
             ),
             ToolResult(
-                name="git", binary="git", category="Version Control",
-                found=True, version="2.43.0", path="/usr/bin/git",
+                name="git",
+                binary="git",
+                category="Version Control",
+                found=True,
+                version="2.43.0",
+                path="/usr/bin/git",
             ),
         ],
         services=[
@@ -64,8 +74,11 @@ def test_format_markdown():
 
 def test_format_text_empty():
     scan = ScanResult(
-        hostname="empty", timestamp="now", platform="Linux",
-        results=[], services=[],
+        hostname="empty",
+        timestamp="now",
+        platform="Linux",
+        results=[],
+        services=[],
     )
     text = format_text(scan)
     assert "Found 0/0 tools" in text

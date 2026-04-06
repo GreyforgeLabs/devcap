@@ -87,7 +87,12 @@ def load_builtin_profile(name: str) -> Profile:
 
 def load_custom_profile(path: str | Path) -> Profile:
     """Load a custom TOML profile from a file path."""
-    with open(path, "rb") as f:
+    resolved = Path(path).resolve()
+    if not resolved.is_file():
+        raise FileNotFoundError(f"Profile not found: {resolved}")
+    if resolved.suffix != ".toml":
+        raise ValueError(f"Profile must be a .toml file: {resolved}")
+    with open(resolved, "rb") as f:
         data = tomllib.load(f)
     return _parse_profile(data)
 

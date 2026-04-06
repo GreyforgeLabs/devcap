@@ -43,8 +43,11 @@ def test_extract_version_truncation():
 
 def test_scan_tool_python3():
     tool = ToolDef(
-        name="python3", binary="python3", category="Languages",
-        version_flag="--version", version_source="stdout",
+        name="python3",
+        binary="python3",
+        category="Languages",
+        version_flag="--version",
+        version_source="stdout",
     )
     result = scan_tool(tool)
     assert result.found is True
@@ -55,8 +58,11 @@ def test_scan_tool_python3():
 
 def test_scan_tool_missing():
     tool = ToolDef(
-        name="nonexistent_xyz", binary="nonexistent_xyz_binary",
-        category="Test", version_flag="--version", version_source="stdout",
+        name="nonexistent_xyz",
+        binary="nonexistent_xyz_binary",
+        category="Test",
+        version_flag="--version",
+        version_source="stdout",
     )
     result = scan_tool(tool)
     assert result.found is False
@@ -66,8 +72,13 @@ def test_scan_tool_missing():
 
 def test_scan_tools_basic():
     tools = [
-        ToolDef(name="python3", binary="python3", category="Languages",
-                version_flag="--version", version_source="stdout"),
+        ToolDef(
+            name="python3",
+            binary="python3",
+            category="Languages",
+            version_flag="--version",
+            version_source="stdout",
+        ),
     ]
     result = scan_tools(tools=tools, parallel=False)
     assert isinstance(result, ScanResult)
@@ -79,10 +90,20 @@ def test_scan_tools_basic():
 
 def test_scan_tools_parallel():
     tools = [
-        ToolDef(name="python3", binary="python3", category="Languages",
-                version_flag="--version", version_source="stdout"),
-        ToolDef(name="git", binary="git", category="Version Control",
-                version_flag="--version", version_source="stdout"),
+        ToolDef(
+            name="python3",
+            binary="python3",
+            category="Languages",
+            version_flag="--version",
+            version_source="stdout",
+        ),
+        ToolDef(
+            name="git",
+            binary="git",
+            category="Version Control",
+            version_flag="--version",
+            version_source="stdout",
+        ),
     ]
     result = scan_tools(tools=tools, parallel=True)
     assert len(result.results) == 2
@@ -90,8 +111,12 @@ def test_scan_tools_parallel():
 
 def test_tool_result_to_dict():
     tr = ToolResult(
-        name="python3", binary="python3", category="Languages",
-        found=True, version="3.12.3", path="/usr/bin/python3",
+        name="python3",
+        binary="python3",
+        category="Languages",
+        found=True,
+        version="3.12.3",
+        path="/usr/bin/python3",
     )
     d = tr.to_dict()
     assert d["name"] == "python3"
