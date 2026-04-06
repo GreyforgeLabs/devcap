@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "AGPL-3.0-only" }
 authors = [
-  { name = "Greyforge", email = "admin@greyforgelabs.com" },
+  { name = "Greyforge", email = "admin@greyforge.tech" },
 ]
 keywords = ["devtools", "scanner", "cli", "environment", "audit", "capabilities"]
 classifiers = [
