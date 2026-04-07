@@ -85,16 +85,18 @@ def _is_vendored(path: str) -> bool:
 def _find_binary(tool: ToolDef) -> str | None:
     """Find the binary on PATH, trying aliases and skipping vendored paths."""
     candidates = [tool.binary, *tool.aliases]
-    for candidate in candidates:
-        path = shutil.which(candidate)
-        if path and not _is_vendored(path):
-            return path
-    # Fallback: accept vendored path if nothing else found
+    fallback: str | None = None
+
     for candidate in candidates:
         path = shutil.which(candidate)
         if path:
-            return path
-    return None
+            if fallback is None:
+                fallback = path
+            if not _is_vendored(path):
+                return path
+
+    # Fallback: accept vendored path if nothing else found
+    return fallback
 
 
 def extract_version(output: str) -> str | None:
@@ -185,7 +187,10 @@ def scan_tools(
         services = []
 
     if parallel and len(tools) > 1:
-        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        workers = min(max_workers, len(tools))
+        if workers < 1:
+            workers = 1
+        with ThreadPoolExecutor(max_workers=workers) as pool:
             tool_results = list(pool.map(scan_tool, tools))
     else:
         tool_results = [scan_tool(t) for t in tools]
