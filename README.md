@@ -4,6 +4,10 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
+<p align="center">
+  <img src="docs/assets/openforge-devcap.webp" alt="devcap OpenForge project artwork" width="720">
+</p>
+
 ## Why This Exists
 
 Setting up a new machine or debugging a CI pipeline means answering: "What's installed? What version? What's missing?" Existing tools like `envinfo` only cover the JS ecosystem. `devcap` scans **84 tools across 14 categories** — languages, package managers, build tools, containers, editors, linters, databases, and more — with structured output you can actually parse.
