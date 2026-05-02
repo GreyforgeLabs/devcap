@@ -1,0 +1,109 @@
+{
+  "checks": [
+    {
+      "details": "python, shell",
+      "id": "project-type",
+      "label": "Project type",
+      "name": "Project type",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "details": "src/devcap/formatters.py, src/devcap/cli.py, src/devcap/__main__.py, src/devcap/scanner.py, src/devcap/profile_loader.py",
+      "id": "python-source",
+      "label": "Python source",
+      "name": "Python source",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "details": "tests/test_profiles.py, tests/conftest.py, tests/test_cli.py, tests/test_scanner.py, tests/test_registry.py",
+      "id": "python-tests",
+      "label": "Python tests",
+      "name": "Python tests",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "details": "no scaffold placeholders found",
+      "id": "template-placeholders-removed",
+      "label": "Template placeholders removed",
+      "name": "Template placeholders removed",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
+    }
+  ],
+  "generated_at": "2026-05-02T02:03:13+00:00",
+  "git": {
+    "branch": "main",
+    "dirty": false,
+    "is_repo": true,
+    "remote_configured": true,
+    "status_count": 0
+  },
+  "manifests": {
+    "pyproject.toml": {
+      "license": null,
+      "name": "devcap",
+      "version": "0.1.0"
+    }
+  },
+  "mutation_readiness": {
+    "github": {
+      "ready": true,
+      "requires_operator_gate": true
+    },
+    "webforge_deploy": {
+      "ready": true,
+      "requires_operator_gate": true
+    },
+    "webforge_stage": {
+      "ready": true,
+      "requires_operator_gate": true
+    }
+  },
+  "project": {
+    "languages": [
+      "python",
+      "shell"
+    ],
+    "name": "devcap",
+    "scaffolded": true,
+    "spec_exists": false,
+    "subtitle": "Development environment capability scanner",
+    "tier": "Tier 1: Build First",
+    "workspace_repo": true
+  },
+  "readiness": {
+    "failed_checks": 0,
+    "missing_release_files": 0,
+    "ready": true,
+    "scrub_findings": 0
+  },
+  "release_files": {
+    "missing": [],
+    "ok": true,
+    "present": [
+      "README.md",
+      "STARTHERE.md",
+      "CONTRIBUTING.md",
+      "CODE_OF_CONDUCT.md",
+      "LICENSE",
+      "SECURITY.md",
+      "CHANGELOG.md",
+      ".editorconfig",
+      ".gitattributes",
+      ".gitignore"
+    ]
+  },
+  "schema": "openforge.audit.v1",
+  "scrub": {
+    "finding_count": 0,
+    "findings": [],
+    "ok": true
+  }
+}
