@@ -35,9 +35,36 @@
       "ok": true,
       "severity": "info",
       "status": "pass"
+    },
+    {
+      "details": "setup.sh exited 0",
+      "id": "setup-script",
+      "label": "Setup script",
+      "name": "Setup script",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "details": "pytest passed",
+      "id": "pytest-run",
+      "label": "Pytest run",
+      "name": "Pytest run",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "details": "verification command passed",
+      "id": "starthere-verification",
+      "label": "STARTHERE verification",
+      "name": "STARTHERE verification",
+      "ok": true,
+      "severity": "info",
+      "status": "pass"
     }
   ],
-  "generated_at": "2026-05-02T02:03:13+00:00",
+  "generated_at": "2026-05-02T02:36:48+00:00",
   "git": {
     "branch": "main",
     "dirty": false,
@@ -82,7 +109,8 @@
     "failed_checks": 0,
     "missing_release_files": 0,
     "ready": true,
-    "scrub_findings": 0
+    "scrub_findings": 0,
+    "status": "ready"
   },
   "release_files": {
     "missing": [],
