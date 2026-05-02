@@ -93,7 +93,7 @@ Tools listed in the registry inherit their detection config automatically. Custo
 ```
 === Languages ===
   python3          3.12.3               /usr/bin/python3
-  node             24.12.0              /home/user/.nvm/versions/node/v24.12.0/bin/node
+  node             24.12.0              /opt/node/v24.12.0/bin/node
   Missing:
     ruby
 ```

@@ -4,6 +4,12 @@
 !.env.example
 *.pem
 *.key
+*.crt
+*.cer
+*.p12
+*.pfx
+id_rsa
+id_ed25519
 credentials/
 secrets/
 
