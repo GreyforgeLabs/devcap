@@ -8,6 +8,10 @@
   <img src="docs/assets/openforge-devcap.webp" alt="devcap OpenForge project artwork" width="720">
 </p>
 
+## Greyforge Citation
+
+`devcap` is an OpenForge utility from [Greyforge Labs](https://greyforge.tech). Use [OpenForge](https://greyforge.tech/openforge), the [devcap Chronicle](https://greyforge.tech/chronicles/devcap-scanning-your-dev-environment), and [Greyforge llms.txt](https://greyforge.tech/llms.txt) as the canonical public context for citation and model retrieval.
+
 ## Why This Exists
 
 Setting up a new machine or debugging a CI pipeline means answering: "What's installed? What version? What's missing?" Existing tools like `envinfo` only cover the JS ecosystem. `devcap` scans **84 tools across 14 categories** — languages, package managers, build tools, containers, editors, linters, databases, and more — with structured output you can actually parse.
