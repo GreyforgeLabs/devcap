@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Security
+
+- Validate custom TOML profile schema, command fields, service names, and profile size before scanning.
+- Reject high-risk custom interpreter commands and shell-control characters in custom version flags.
+- Skip vendored/project-local PATH segments by default; add `--include-vendored` for trusted checkouts.
+- Add `--redact` to replace hostnames and executable paths before public sharing.
+- Sanitize terminal control sequences and Markdown table delimiters in human-readable output.
+- Add `systemctl --` argument separation for service checks and process-group cleanup on scan timeouts.
+- Harden GitHub Actions release/publish workflows with pinned action commits, tag/version checks, job timeouts, and narrower permissions.
+
 ## [0.1.0] - 2026-04-06
 
 ### Added

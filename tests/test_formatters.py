@@ -90,3 +90,31 @@ def test_format_json_roundtrip():
     data = json.loads(output)
     assert isinstance(data, dict)
     assert "tools" in data
+
+
+def test_formatters_strip_control_sequences_and_escape_markdown():
+    scan = ScanResult(
+        hostname="host\x1b[31m\nspoof",
+        timestamp="2026-01-01T00:00:00+00:00",
+        platform="Linux 6.0.0",
+        results=[
+            ToolResult(
+                name="bad|tool",
+                binary="bad",
+                category="Custom|Category",
+                found=True,
+                version="\x1b[31m1.0|spoof\x1b[0m",
+                path="/tmp/a|b\nnext",
+            )
+        ],
+        services=[ServiceResult(name="svc|name", active=True)],
+    )
+
+    text = format_text(scan)
+    markdown = format_markdown(scan)
+
+    assert "\x1b" not in text
+    assert "\x1b" not in markdown
+    assert "spoof\n" not in text
+    assert "bad\\|tool" in markdown
+    assert "/tmp/a\\|b next" in markdown

@@ -7,7 +7,7 @@ import sys
 
 from .formatters import FORMATTERS
 from .profile_loader import list_builtin_profiles, load_builtin_profile, load_custom_profile
-from .scanner import scan_tools
+from .scanner import redact_scan, scan_tools
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -72,6 +72,19 @@ def _add_scan_arguments(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Disable parallel scanning (useful for debugging)",
     )
+    parser.add_argument(
+        "--include-vendored",
+        action="store_true",
+        help=(
+            "Allow executables from vendored/project-local PATH segments such as "
+            "node_modules or .venv"
+        ),
+    )
+    parser.add_argument(
+        "--redact",
+        action="store_true",
+        help="Replace hostname and executable paths with [redacted] in output",
+    )
 
 
 def _cmd_list_profiles() -> int:
@@ -86,24 +99,33 @@ def _cmd_list_profiles() -> int:
 
 def _cmd_scan(args: argparse.Namespace) -> int:
     # Load profile
-    if args.config:
-        profile = load_custom_profile(args.config)
-    elif args.profile:
-        try:
+    try:
+        if args.config:
+            profile = load_custom_profile(args.config)
+        elif args.profile:
             profile = load_builtin_profile(args.profile)
-        except FileNotFoundError:
+        else:
+            profile = load_builtin_profile("full")
+    except FileNotFoundError:
+        if args.profile:
             print(f"Error: unknown profile '{args.profile}'", file=sys.stderr)
             print(f"Available: {', '.join(list_builtin_profiles())}", file=sys.stderr)
-            return 2
-    else:
-        profile = load_builtin_profile("full")
+        else:
+            print(f"Error: profile not found: {args.config}", file=sys.stderr)
+        return 2
+    except ValueError as exc:
+        print(f"Error: invalid profile: {exc}", file=sys.stderr)
+        return 2
 
     # Scan
     result = scan_tools(
         tools=profile.tools,
         services=profile.services,
         parallel=not args.no_parallel,
+        include_vendored=args.include_vendored,
     )
+    if args.redact:
+        result = redact_scan(result)
 
     # Format and print
     formatter = FORMATTERS[args.format]

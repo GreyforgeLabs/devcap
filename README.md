@@ -36,6 +36,9 @@ devcap scan --format json
 # Markdown tables (paste into docs)
 devcap scan --format markdown
 
+# Public-safe metadata: suppress hostname and executable paths
+devcap scan --format markdown --redact
+
 # Scan only Python-related tools
 devcap scan --profile python-dev
 
@@ -44,6 +47,9 @@ devcap check --profile devops
 
 # Custom profile
 devcap scan --config my-tools.toml
+
+# Include project-local/vendor PATH entries such as node_modules/.bin or .venv/bin
+devcap scan --profile node-dev --include-vendored
 
 # List available profiles
 devcap list-profiles
@@ -91,6 +97,8 @@ version_flag = "-v"
 
 Tools listed in the registry inherit their detection config automatically. Custom tools need `binary` and optionally `version_flag`.
 
+Custom profiles execute local binaries to collect versions. Treat profiles from third-party repositories like code, not passive data. By default, `devcap` rejects interpreter-style custom commands and skips vendored/project-local PATH entries such as `node_modules`, `.venv`, `venv`, `__pypackages__`, `.tox`, and `.nox`; use `--include-vendored` only when you trust the checkout being scanned.
+
 ## Output Formats
 
 **Text** (default) — columnar, human-readable:
@@ -113,7 +121,7 @@ Tools listed in the registry inherit their detection config automatically. Custo
 }
 ```
 
-**Markdown** — tables for documentation or READMEs.
+**Markdown** — tables for documentation or READMEs. Terminal control sequences and Markdown table delimiters from tool output are sanitized before display, but environment inventory can still reveal hostnames, paths, installed tools, and service status. Use `--redact` to replace hostname and executable paths before publishing output.
 
 ## Exit Codes
 

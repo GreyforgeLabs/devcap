@@ -1,14 +1,20 @@
 """Integration tests for the CLI."""
 
 import json
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 
 def _run_devcap(*args: str) -> subprocess.CompletedProcess:
+    env = os.environ.copy()
+    src = str(Path(__file__).resolve().parents[1] / "src")
+    env["PYTHONPATH"] = os.pathsep.join([src, env["PYTHONPATH"]]) if env.get("PYTHONPATH") else src
     return subprocess.run(
         [sys.executable, "-m", "devcap", *args],
         capture_output=True,
+        env=env,
         text=True,
         timeout=60,
     )
@@ -63,3 +69,29 @@ def test_scan_no_parallel():
     assert result.returncode == 0
     data = json.loads(result.stdout)
     assert len(data["tools"]) > 0
+
+
+def test_scan_redact_json():
+    result = _run_devcap("scan", "--profile", "python-dev", "--format", "json", "--redact")
+    assert result.returncode == 0
+    data = json.loads(result.stdout)
+    assert data["hostname"] == "[redacted]"
+    assert all(tool.get("path") == "[redacted]" for tool in data["tools"] if tool["found"])
+
+
+def test_rejects_unsafe_custom_profile(tmp_path):
+    profile_path = tmp_path / "unsafe.toml"
+    profile_path.write_text(
+        """
+        [[tools]]
+        name = "owned"
+        binary = "sh"
+        version_flag = "-c id"
+        """,
+        encoding="utf-8",
+    )
+
+    result = _run_devcap("scan", "--config", str(profile_path))
+
+    assert result.returncode == 2
+    assert "invalid profile" in result.stderr

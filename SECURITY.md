@@ -24,6 +24,12 @@ Instead, use one of these methods:
 - Potential impact
 - Suggested fix (if you have one)
 
+## Local Scan Boundary
+
+`devcap` is a local inventory tool. It executes discovered binaries with version flags, so custom profiles and PATH entries from untrusted repositories must be treated as executable inputs. The default scanner rejects high-risk custom interpreter commands, skips vendored/project-local PATH segments unless `--include-vendored` is set, validates custom profile schema, separates `systemctl` options from service names, and sanitizes terminal/Markdown display output.
+
+Inventory output may include hostnames, OS details, executable paths, tool versions, and service state. Use `--redact` to suppress hostname and executable paths, then review JSON, text, and Markdown output before publishing it or uploading it as a public artifact.
+
 ## Response Timeline
 
 - **Acknowledgment**: Within 48 hours
