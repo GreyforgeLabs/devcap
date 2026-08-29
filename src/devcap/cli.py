@@ -3,11 +3,45 @@
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 
 from .formatters import FORMATTERS
-from .profile_loader import list_builtin_profiles, load_builtin_profile, load_custom_profile
-from .scanner import redact_scan, scan_tools
+from .profile_loader import (
+    MAX_PROFILE_DEPTH,
+    list_builtin_profiles,
+    load_builtin_profile,
+    load_custom_profile,
+)
+from .scanner import (
+    COMMAND_TIMEOUT_SECONDS,
+    MAX_COMMAND_TIMEOUT_SECONDS,
+    MAX_SCAN_WORKERS,
+    redact_scan,
+    scan_tools,
+)
+
+
+def _finite_positive_timeout(value: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be a number") from exc
+    if not math.isfinite(parsed) or parsed <= 0 or parsed > MAX_COMMAND_TIMEOUT_SECONDS:
+        raise argparse.ArgumentTypeError(
+            f"must be greater than 0 and at most {MAX_COMMAND_TIMEOUT_SECONDS:g}"
+        )
+    return parsed
+
+
+def _bounded_positive_integer(value: str, *, maximum: int) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer") from exc
+    if parsed < 1 or parsed > maximum:
+        raise argparse.ArgumentTypeError(f"must be between 1 and {maximum}")
+    return parsed
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -59,13 +93,32 @@ def _add_scan_arguments(parser: argparse.ArgumentParser) -> None:
         default="text",
         help="Output format (default: text)",
     )
-    parser.add_argument(
+    profile_group = parser.add_mutually_exclusive_group()
+    profile_group.add_argument(
         "--profile",
         help="Built-in profile name (e.g. python-dev, devops, full)",
     )
-    parser.add_argument(
+    profile_group.add_argument(
         "--config",
         help="Path to a custom TOML profile file",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=_finite_positive_timeout,
+        default=COMMAND_TIMEOUT_SECONDS,
+        help=f"Per-probe timeout in seconds (default: {COMMAND_TIMEOUT_SECONDS:g})",
+    )
+    parser.add_argument(
+        "--max-depth",
+        type=lambda value: _bounded_positive_integer(value, maximum=MAX_PROFILE_DEPTH),
+        default=MAX_PROFILE_DEPTH,
+        help=f"Maximum parsed profile nesting depth (default: {MAX_PROFILE_DEPTH})",
+    )
+    parser.add_argument(
+        "--max-workers",
+        type=lambda value: _bounded_positive_integer(value, maximum=MAX_SCAN_WORKERS),
+        default=16,
+        help="Maximum parallel probe workers (default: 16)",
     )
     parser.add_argument(
         "--no-parallel",
@@ -83,7 +136,7 @@ def _add_scan_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--redact",
         action="store_true",
-        help="Replace hostname and executable paths with [redacted] in output",
+        help="Replace hostname, executable paths, and raw version banners with [redacted]",
     )
 
 
@@ -101,11 +154,11 @@ def _cmd_scan(args: argparse.Namespace) -> int:
     # Load profile
     try:
         if args.config:
-            profile = load_custom_profile(args.config)
+            profile = load_custom_profile(args.config, max_depth=args.max_depth)
         elif args.profile:
-            profile = load_builtin_profile(args.profile)
+            profile = load_builtin_profile(args.profile, max_depth=args.max_depth)
         else:
-            profile = load_builtin_profile("full")
+            profile = load_builtin_profile("full", max_depth=args.max_depth)
     except FileNotFoundError:
         if args.profile:
             print(f"Error: unknown profile '{args.profile}'", file=sys.stderr)
@@ -122,7 +175,9 @@ def _cmd_scan(args: argparse.Namespace) -> int:
         tools=profile.tools,
         services=profile.services,
         parallel=not args.no_parallel,
+        max_workers=args.max_workers,
         include_vendored=args.include_vendored,
+        timeout=args.timeout,
     )
     if args.redact:
         result = redact_scan(result)

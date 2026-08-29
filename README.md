@@ -48,6 +48,9 @@ devcap check --profile devops
 # Custom profile
 devcap scan --config my-tools.toml
 
+# Explicit bounded probe/profile controls
+devcap scan --timeout 3 --max-depth 8 --max-workers 8
+
 # Include project-local/vendor PATH entries such as node_modules/.bin or .venv/bin
 devcap scan --profile node-dev --include-vendored
 
@@ -97,7 +100,7 @@ version_flag = "-v"
 
 Tools listed in the registry inherit their detection config automatically. Custom tools need `binary` and optionally `version_flag`.
 
-Custom profiles execute local binaries to collect versions. Treat profiles from third-party repositories like code, not passive data. By default, `devcap` rejects interpreter-style custom commands and skips vendored/project-local PATH entries such as `node_modules`, `.venv`, `venv`, `__pypackages__`, `.tox`, and `.nox`; use `--include-vendored` only when you trust the checkout being scanned.
+Custom profiles execute local binaries to collect versions. Treat profiles from third-party repositories like code, not passive data. By default, `devcap` rejects unknown keys, duplicate case-normalized tool names, interpreter-style custom commands, and vendored/project-local PATH entries such as `node_modules`, `.venv`, `venv`, `__pypackages__`, `.tox`, and `.nox`; use `--include-vendored` only when you trust the checkout being scanned. Profile reads are capped at 1 MB and parsed from the exact opened file handle.
 
 ## Output Formats
 
@@ -116,12 +119,22 @@ Custom profiles execute local binaries to collect versions. Treat profiles from 
   "hostname": "dev-machine",
   "timestamp": "2026-01-01T00:00:00+00:00",
   "platform": "Linux 6.0.0",
-  "tools": [{"name": "python3", "found": true, "version": "3.12.3", "path": "/usr/bin/python3"}],
+  "tools": [{
+    "name": "python3",
+    "found": true,
+    "version": "3.12.3",
+    "path": "/usr/bin/python3",
+    "version_diagnostics": {
+      "source_stream": "stdout",
+      "raw_banner": "Python 3.12.3\n",
+      "truncated": false
+    }
+  }],
   "services": [{"name": "docker", "active": true}]
 }
 ```
 
-**Markdown** — tables for documentation or READMEs. Terminal control sequences and Markdown table delimiters from tool output are sanitized before display, but environment inventory can still reveal hostnames, paths, installed tools, and service status. Use `--redact` to replace hostname and executable paths before publishing output.
+**Markdown** — tables for documentation or READMEs. Terminal control sequences and Markdown table delimiters from tool output are sanitized before display, but environment inventory can still reveal hostnames, paths, installed tools, and service status. JSON includes the bounded source stream/banner used for version detection. Use `--redact` to replace the hostname, executable paths, and raw version banners before publishing output.
 
 ## Exit Codes
 

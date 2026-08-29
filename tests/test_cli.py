@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 
 def _run_devcap(*args: str) -> subprocess.CompletedProcess:
     env = os.environ.copy()
@@ -95,3 +97,39 @@ def test_rejects_unsafe_custom_profile(tmp_path):
 
     assert result.returncode == 2
     assert "invalid profile" in result.stderr
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ("--timeout", "0"),
+        ("--timeout", "-1"),
+        ("--timeout", "nan"),
+        ("--timeout", "inf"),
+        ("--timeout", "61"),
+        ("--max-depth", "0"),
+        ("--max-depth", "17"),
+        ("--max-workers", "0"),
+        ("--max-workers", "65"),
+    ],
+)
+def test_rejects_invalid_numeric_options(args):
+    result = _run_devcap("scan", "--profile", "python-dev", *args)
+
+    assert result.returncode == 2
+    assert "error" in result.stderr.lower()
+
+
+def test_profile_and_config_are_mutually_exclusive(tmp_path):
+    profile_path = tmp_path / "profile.toml"
+    profile_path.write_text("[profile]\nname = 'custom'\n", encoding="utf-8")
+
+    result = _run_devcap(
+        "scan",
+        "--profile",
+        "python-dev",
+        "--config",
+        str(profile_path),
+    )
+
+    assert result.returncode == 2

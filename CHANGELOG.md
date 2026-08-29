@@ -6,8 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-28
+
 ### Security
 
+- Scan every bounded banner line for a version before using descriptive fallback text.
+- Honor the configured stdout/stderr preference with a true fallback and JSON diagnostics.
+- Bound subprocess output, use canonical executable paths, and minimize probe environments.
+- Read custom profiles once through the opened descriptor and enforce byte/depth limits.
+- Reject unknown profile keys and duplicate case-normalized tool names.
+- Validate timeout, profile-depth, and worker-count options as finite positive bounds.
 - Validate custom TOML profile schema, command fields, service names, and profile size before scanning.
 - Reject high-risk custom interpreter commands and shell-control characters in custom version flags.
 - Skip vendored/project-local PATH segments by default; add `--include-vendored` for trusted checkouts.

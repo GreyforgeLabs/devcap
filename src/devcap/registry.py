@@ -55,8 +55,24 @@ def _tool(name: str, category: str, **kwargs) -> ToolDef:
     return ToolDef(name=name, binary=kwargs.pop("binary", name), category=category, **kwargs)
 
 
+def _build_registry(tools: list[ToolDef]) -> dict[str, ToolDef]:
+    """Build a registry without silently overwriting normalized names."""
+    registry: dict[str, ToolDef] = {}
+    normalized_names: dict[str, str] = {}
+    for tool in tools:
+        normalized = tool.name.casefold()
+        if normalized in normalized_names:
+            first = normalized_names[normalized]
+            raise ValueError(
+                f"duplicate normalized tool name: {tool.name!r} conflicts with {first!r}"
+            )
+        normalized_names[normalized] = tool.name
+        registry[tool.name] = tool
+    return registry
+
+
 # fmt: off
-REGISTRY: dict[str, ToolDef] = {t.name: t for t in [
+REGISTRY: dict[str, ToolDef] = _build_registry([
     # --- Languages ---
     _tool("python3",  LANGUAGES),
     _tool("node",     LANGUAGES),
@@ -187,7 +203,7 @@ REGISTRY: dict[str, ToolDef] = {t.name: t for t in [
     _tool("tmux",      MISC),
     _tool("direnv",    MISC),
     _tool("hyperfine", MISC),
-]}
+])
 # fmt: on
 
 

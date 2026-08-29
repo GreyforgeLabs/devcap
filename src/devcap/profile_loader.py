@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import importlib.resources
+import os
 import re
 import shlex
+import stat
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -17,6 +19,14 @@ MAX_SERVICES = 128
 MAX_ALIASES = 16
 MAX_VERSION_ARGS = 8
 MAX_STRING_LENGTH = 256
+MAX_PROFILE_DEPTH = 16
+
+TOP_LEVEL_KEYS = frozenset({"profile", "tools", "services"})
+PROFILE_KEYS = frozenset({"name", "description"})
+TOOL_KEYS = frozenset(
+    {"name", "binary", "category", "version_flag", "version_source", "aliases", "required"}
+)
+SERVICE_KEYS = frozenset({"system", "user"})
 
 TOKEN_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.+@:-]{0,127}$")
 SERVICE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.@:+-]{0,127}$")
@@ -61,6 +71,34 @@ class Profile:
     tools: list[ToolDef]
     required_tools: set[str]
     services: list[tuple[str, bool]] = field(default_factory=list)
+
+
+def _reject_unknown_keys(value: dict, allowed: frozenset[str], field: str) -> None:
+    unknown = sorted(set(value) - allowed)
+    if unknown:
+        raise ValueError(f"{field} contains unknown key(s): {', '.join(unknown)}")
+
+
+def _validate_max_depth(value: object) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError("max_depth must be a positive integer")
+    if value < 1 or value > MAX_PROFILE_DEPTH:
+        raise ValueError(f"max_depth must be between 1 and {MAX_PROFILE_DEPTH}")
+    return value
+
+
+def _assert_profile_depth(value: object, max_depth: int) -> None:
+    """Reject unexpectedly deep TOML structures after a bounded read."""
+    limit = _validate_max_depth(max_depth)
+    stack = [(value, 1)]
+    while stack:
+        current, depth = stack.pop()
+        if depth > limit:
+            raise ValueError(f"profile nesting exceeds max_depth {limit}")
+        if isinstance(current, dict):
+            stack.extend((child, depth + 1) for child in current.values())
+        elif isinstance(current, list | tuple):
+            stack.extend((child, depth + 1) for child in current)
 
 
 def _string(value: object, field: str, *, default: str | None = None) -> str:
@@ -133,6 +171,7 @@ def _resolve_tool(entry: dict) -> ToolDef | None:
     """Resolve a TOML tool entry against the registry, applying overrides."""
     if not isinstance(entry, dict):
         raise ValueError("tools entries must be TOML tables")
+    _reject_unknown_keys(entry, TOOL_KEYS, "tools[]")
 
     name = _string(entry.get("name"), "tools[].name")
     _validate_token(name, "tools[].name")
@@ -183,14 +222,17 @@ def _resolve_tool(entry: dict) -> ToolDef | None:
     )
 
 
-def _parse_profile(data: dict) -> Profile:
+def _parse_profile(data: dict, *, max_depth: int = MAX_PROFILE_DEPTH) -> Profile:
     """Parse a TOML profile dict into a Profile."""
     if not isinstance(data, dict):
         raise ValueError("profile document must be a TOML table")
+    _assert_profile_depth(data, max_depth)
+    _reject_unknown_keys(data, TOP_LEVEL_KEYS, "profile document")
 
     meta = data.get("profile", {})
     if not isinstance(meta, dict):
         raise ValueError("[profile] must be a TOML table")
+    _reject_unknown_keys(meta, PROFILE_KEYS, "[profile]")
     name = _string(meta.get("name"), "profile.name", default="custom")
     description = _string(meta.get("description"), "profile.description", default="")
 
@@ -201,9 +243,17 @@ def _parse_profile(data: dict) -> Profile:
         raise ValueError("tools must be an array of TOML tables")
     if len(tool_entries) > MAX_TOOLS:
         raise ValueError("profile has too many tools")
+    normalized_tool_names: dict[str, str] = {}
     for entry in tool_entries:
         tool = _resolve_tool(entry)
         if tool:
+            normalized = tool.name.casefold()
+            if normalized in normalized_tool_names:
+                first = normalized_tool_names[normalized]
+                raise ValueError(
+                    f"duplicate normalized tool name: {tool.name!r} conflicts with {first!r}"
+                )
+            normalized_tool_names[normalized] = tool.name
             tools.append(tool)
             if _bool(entry.get("required"), "tools[].required"):
                 required.add(tool.name)
@@ -211,6 +261,7 @@ def _parse_profile(data: dict) -> Profile:
     services_section = data.get("services", {})
     if not isinstance(services_section, dict):
         raise ValueError("[services] must be a TOML table")
+    _reject_unknown_keys(services_section, SERVICE_KEYS, "[services]")
     services: list[tuple[str, bool]] = []
     system_services = _string_list(
         services_section.get("system"), "services.system", max_items=MAX_SERVICES
@@ -236,7 +287,7 @@ def _parse_profile(data: dict) -> Profile:
     )
 
 
-def load_builtin_profile(name: str) -> Profile:
+def load_builtin_profile(name: str, *, max_depth: int = MAX_PROFILE_DEPTH) -> Profile:
     """Load a built-in TOML profile by name."""
     _validate_token(name, "profile name")
     filename = f"{name}.toml"
@@ -244,21 +295,37 @@ def load_builtin_profile(name: str) -> Profile:
     resource = files / filename
     text = resource.read_text(encoding="utf-8")
     data = tomllib.loads(text)
-    return _parse_profile(data)
+    return _parse_profile(data, max_depth=max_depth)
 
 
-def load_custom_profile(path: str | Path) -> Profile:
+def load_custom_profile(path: str | Path, *, max_depth: int = MAX_PROFILE_DEPTH) -> Profile:
     """Load a custom TOML profile from a file path."""
-    resolved = Path(path).resolve()
-    if not resolved.is_file():
-        raise FileNotFoundError(f"Profile not found: {resolved}")
+    resolved = Path(path).expanduser().absolute()
     if resolved.suffix != ".toml":
         raise ValueError(f"Profile must be a .toml file: {resolved}")
-    if resolved.stat().st_size > MAX_PROFILE_BYTES:
-        raise ValueError(f"Profile is too large: {resolved}")
-    with open(resolved, "rb") as f:
-        data = tomllib.load(f)
-    return _parse_profile(data)
+    _validate_max_depth(max_depth)
+    try:
+        handle = open(resolved, "rb")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"Profile not found: {resolved}") from exc
+    except OSError as exc:
+        raise ValueError(f"Profile cannot be opened: {resolved}: {exc.strerror}") from exc
+
+    with handle:
+        metadata = os.fstat(handle.fileno())
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ValueError(f"Profile must be a regular file: {resolved}")
+        if metadata.st_size > MAX_PROFILE_BYTES:
+            raise ValueError(f"Profile is too large: {resolved}")
+        raw = handle.read(MAX_PROFILE_BYTES + 1)
+        if len(raw) > MAX_PROFILE_BYTES:
+            raise ValueError(f"Profile is too large: {resolved}")
+
+    try:
+        data = tomllib.loads(raw.decode("utf-8"))
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"Profile must be UTF-8: {resolved}") from exc
+    return _parse_profile(data, max_depth=max_depth)
 
 
 def list_builtin_profiles() -> list[str]:

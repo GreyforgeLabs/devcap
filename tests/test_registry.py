@@ -1,6 +1,15 @@
 """Tests for the tool registry."""
 
-from devcap.registry import CATEGORIES, REGISTRY, ToolDef, get_tool, get_tools_by_category
+import pytest
+
+from devcap.registry import (
+    CATEGORIES,
+    REGISTRY,
+    ToolDef,
+    _build_registry,
+    get_tool,
+    get_tools_by_category,
+)
 
 
 def test_registry_not_empty():
@@ -62,3 +71,13 @@ def test_version_flag_overrides():
 def test_no_duplicate_names():
     names = [t.name for t in REGISTRY.values()]
     assert len(names) == len(set(names))
+
+
+def test_registry_builder_rejects_normalized_duplicate_names():
+    tools = [
+        ToolDef("Example", "example", "Test"),
+        ToolDef("example", "example-2", "Test"),
+    ]
+
+    with pytest.raises(ValueError, match="duplicate normalized tool name"):
+        _build_registry(tools)

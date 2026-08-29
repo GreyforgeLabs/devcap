@@ -2,6 +2,9 @@
 
 import os
 import subprocess
+import sys
+
+import pytest
 
 from devcap import scanner
 from devcap.registry import ToolDef
@@ -9,6 +12,8 @@ from devcap.scanner import (
     ScanResult,
     ToolResult,
     _find_binary,
+    _get_version,
+    _run_command,
     check_service,
     extract_version,
     redact_scan,
@@ -28,6 +33,11 @@ def test_extract_version_with_v_prefix():
 def test_extract_version_multiline():
     output = "ruff 0.15.0\nsome other line\n"
     assert extract_version(output) == "0.15.0"
+
+
+def test_extract_version_scans_past_warning():
+    output = "warning: optional plugin unavailable\ntool version 7.8.9\n"
+    assert extract_version(output) == "7.8.9"
 
 
 def test_extract_version_fallback():
@@ -51,6 +61,74 @@ def test_extract_version_truncation():
 def test_extract_version_strips_terminal_controls():
     assert extract_version("\x1b[31mtool 1.2.3\x1b[0m\n") == "1.2.3"
     assert extract_version("bad\x07line") == "bad line"
+
+
+@pytest.mark.parametrize(
+    ("preferred", "stdout", "stderr", "expected", "source"),
+    [
+        ("stdout", "warning\ntool 2.3.4\n", "", "2.3.4", "stdout"),
+        ("stdout", "warning only\n", "tool 3.4.5\n", "3.4.5", "stderr"),
+        ("stdout", "", "tool 4.5.6\n", "4.5.6", "stderr"),
+        ("stderr", "tool 5.6.7\n", "", "5.6.7", "stdout"),
+        ("stderr", "stdout banner\n", "stderr banner\n", "stderr banner", "stderr"),
+    ],
+)
+def test_get_version_stream_preference_and_fallback(
+    monkeypatch, preferred, stdout, stderr, expected, source
+):
+    def fake_run(*_args, **_kwargs):
+        return scanner.CommandResult(["/bin/tool"], 0, stdout, stderr)
+
+    monkeypatch.setattr(scanner, "_run_command", fake_run)
+    tool = ToolDef(
+        name="tool",
+        binary="tool",
+        category="Test",
+        version_source=preferred,
+    )
+
+    probe = _get_version(tool, "/bin/tool")
+
+    assert probe.version == expected
+    assert probe.source_stream == source
+    assert probe.raw_banner == (stdout if source == "stdout" else stderr)
+
+
+def test_run_command_replaces_invalid_utf8_and_bounds_output(monkeypatch):
+    monkeypatch.setenv("PATH", "/tmp/untrusted-path")
+    monkeypatch.setenv("DEVCAP_PRIVATE_TEST", "must-not-leak")
+    code = (
+        "import os,sys; "
+        "sys.stdout.buffer.write(b'\\xfftool 1.2.3\\n'); "
+        "sys.stderr.write(os.environ.get('DEVCAP_PRIVATE_TEST', 'clean') + "
+        "'|' + os.environ.get('PATH', ''))"
+    )
+    result = _run_command([sys.executable, "-c", code], max_output_bytes=1024)
+
+    assert result is not None
+    assert "�tool 1.2.3" in result.stdout
+    assert result.stderr.startswith("clean|")
+    assert "/tmp/untrusted-path" not in result.stderr
+
+    flooded = _run_command(
+        [sys.executable, "-c", "import sys; sys.stdout.write('x' * 10000)"],
+        max_output_bytes=512,
+    )
+    assert flooded is not None
+    assert flooded.output_truncated is True
+    assert len(flooded.stdout.encode("utf-8")) <= 512
+
+
+@pytest.mark.parametrize("timeout", [0, -1, float("inf"), float("nan"), True])
+def test_run_command_rejects_invalid_timeout(timeout):
+    with pytest.raises(ValueError, match="timeout"):
+        _run_command([sys.executable, "--version"], timeout=timeout)
+
+
+@pytest.mark.parametrize("max_workers", [0, -1, 65, 1.5, True])
+def test_scan_tools_rejects_invalid_worker_bound(max_workers):
+    with pytest.raises(ValueError, match="max_workers"):
+        scan_tools(tools=[], max_workers=max_workers)
 
 
 def test_find_binary_skips_vendored_fallback(tmp_path, monkeypatch):
@@ -97,7 +175,7 @@ def test_find_binary_skips_project_local_relative_path(tmp_path, monkeypatch):
     tool = ToolDef(name="fake-tool", binary="fake-tool", category="Test")
 
     assert _find_binary(tool) is None
-    assert _find_binary(tool, include_vendored=True) == os.path.join("bin", "fake-tool")
+    assert _find_binary(tool, include_vendored=True) == str(fake.resolve())
 
 
 def test_check_service_uses_argument_separator(monkeypatch):
@@ -205,11 +283,18 @@ def test_tool_result_to_dict():
         found=True,
         version="3.12.3",
         path="/usr/bin/python3",
+        version_source="stdout",
+        version_banner="Python 3.12.3\n",
     )
     d = tr.to_dict()
     assert d["name"] == "python3"
     assert d["found"] is True
     assert d["version"] == "3.12.3"
+    assert d["version_diagnostics"] == {
+        "source_stream": "stdout",
+        "raw_banner": "Python 3.12.3\n",
+        "truncated": False,
+    }
 
 
 def test_tool_result_to_dict_missing():
