@@ -14,7 +14,7 @@
 
 ## Why This Exists
 
-Setting up a new machine or debugging a CI pipeline means answering: "What's installed? What version? What's missing?" Existing tools like `envinfo` only cover the JS ecosystem. `devcap` scans **84 tools across 14 categories** — languages, package managers, build tools, containers, editors, linters, databases, and more — with structured output you can actually parse.
+Setting up a new machine or debugging a CI pipeline means answering: "What's installed? What version? What's missing?" Existing tools like `envinfo` only cover the JS ecosystem. `devcap` scans **103 tools across 14 categories** — languages, package managers, build tools, containers, editors, linters, databases, and more — with structured output you can actually parse.
 
 ## Quick Start
 
@@ -62,7 +62,7 @@ devcap list-profiles
 
 | Profile | Description | Tools |
 |---------|-------------|-------|
-| `full` | Everything — all 84 tools | 84 |
+| `full` | Everything — all 103 tools | 103 |
 | `python-dev` | Python development environment | 12 |
 | `node-dev` | Node.js / JavaScript development | 13 |
 | `rust-dev` | Rust development environment | 11 |
