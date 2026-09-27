@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-27
+
+### Changed
+
+- Mark the standalone registry as maintenance-only while preserving the scanner for existing users.
+- Make the CLI check integration test independent of host-installed Python development tools.
+
 ## [0.2.0] - 2026-08-28
 
 ### Security

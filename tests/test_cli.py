@@ -9,8 +9,10 @@ from pathlib import Path
 import pytest
 
 
-def _run_devcap(*args: str) -> subprocess.CompletedProcess:
+def _run_devcap(*args: str, path_prefix: str | None = None) -> subprocess.CompletedProcess:
     env = os.environ.copy()
+    if path_prefix is not None:
+        env["PATH"] = os.pathsep.join([path_prefix, env.get("PATH", "")])
     src = str(Path(__file__).resolve().parents[1] / "src")
     env["PYTHONPATH"] = os.pathsep.join([src, env["PYTHONPATH"]]) if env.get("PYTHONPATH") else src
     return subprocess.run(
@@ -48,10 +50,24 @@ def test_scan_markdown():
     assert "##" in result.stdout
 
 
-def test_check_python_dev():
-    result = _run_devcap("check", "--profile", "python-dev")
-    # Should pass on any machine with python3, pip, git
-    assert result.returncode == 0
+def test_check_custom_profile_uses_controlled_binary(tmp_path):
+    executable = tmp_path / "fixture-tool"
+    executable.write_text("#!/bin/sh\nprintf 'fixture-tool 1.2.3\\n'\n", encoding="utf-8")
+    executable.chmod(0o755)
+    profile = tmp_path / "fixture.toml"
+    profile.write_text(
+        '[profile]\nname = "fixture"\n'
+        '[[tools]]\nname = "fixture-tool"\nbinary = "fixture-tool"\n'
+        'category = "Testing"\nrequired = true\n',
+        encoding="utf-8",
+    )
+
+    present = _run_devcap("check", "--config", str(profile), path_prefix=str(tmp_path))
+    assert present.returncode == 0, present.stderr
+
+    executable.unlink()
+    missing = _run_devcap("check", "--config", str(profile), path_prefix=str(tmp_path))
+    assert missing.returncode == 1
 
 
 def test_list_profiles():

@@ -13,6 +13,8 @@ git clone https://github.com/GreyforgeLabs/devcap.git && cd devcap && ./scripts/
 
 `devcap` scans a machine for installed development tools, extracts versions, and reports results in text, JSON, or markdown. It supports built-in and custom TOML profiles for filtering which tools to scan. Zero runtime dependencies — stdlib only.
 
+Maintenance-only as a standalone project since September 2026. Preserve compatibility for existing users; new projects should declare required tools and versions in their own setup and CI. `check` verifies presence, not version constraints.
+
 ## Project Structure
 
 ```text
@@ -22,9 +24,9 @@ devcap/
     __main__.py       # python -m devcap
     cli.py            # argparse CLI (scan, check, list-profiles)
     scanner.py        # core engine: shutil.which + subprocess + ThreadPoolExecutor
-    registry.py       # 84 tool definitions across 14 categories
+    registry.py       # tool definitions across 14 categories
     formatters.py     # text, json, markdown output
-    profiles.py       # TOML profile loader
+    profile_loader.py # TOML profile loader
     profiles/         # built-in TOML profiles
       full.toml
       python-dev.toml
@@ -55,7 +57,8 @@ devcap scan --format json
 # Expected: JSON object with hostname, timestamp, platform, tools[], services[]
 
 devcap check --profile python-dev
-# Expected: exit code 0 on any machine with python3, pip, git
+# Expected: exit code 0 when the profile's required tools are present;
+# otherwise exit 1. The profile requires python3, pip, and git.
 ```
 
 ## Key Entry Points
@@ -63,7 +66,7 @@ devcap check --profile python-dev
 - `src/devcap/cli.py` — CLI entry point (`main()` function)
 - `src/devcap/scanner.py` — core scanning engine
 - `src/devcap/registry.py` — tool definitions (add new tools here)
-- `src/devcap/profiles.py` — TOML profile loading
+- `src/devcap/profile_loader.py` — TOML profile loading
 - `src/devcap/formatters.py` — output formatting
 
 ## Common Tasks

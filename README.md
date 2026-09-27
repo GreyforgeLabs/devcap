@@ -2,6 +2,8 @@
 
 > Scan your development environment for installed tools, versions, and capabilities.
 
+**Maintenance status (September 2026):** This standalone scanner is retained for existing users, but Greyforge no longer promotes it as an operator utility or expands its general tool registry. For a new project, declare required tools and versions in that project's setup and CI checks. `devcap check` checks presence of profile-required tools; it does not enforce version constraints. Existing releases and documentation remain available.
+
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
 <p align="center">
