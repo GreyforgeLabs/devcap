@@ -1,0 +1,27 @@
+[package]
+name = "devcap"
+version = "0.3.0"
+edition = "2024"
+description = "Development environment capability scanner. Detects installed tools, reports versions, and flags missing dependencies."
+license = "AGPL-3.0-only"
+repository = "https://github.com/GreyforgeLabs/devcap"
+homepage = "https://greyforge.tech"
+readme = "README.md"
+keywords = ["devtools", "scanner", "cli", "environment", "audit"]
+categories = ["command-line-utilities", "development-tools"]
+rust-version = "1.88"
+exclude = ["/release/", "/.github/"]
+
+[dependencies]
+libc = "=0.2.189"
+
+[dev-dependencies]
+assert_cmd = "=2.2.0"
+tempfile = "=3.27.0"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+panic = "abort"

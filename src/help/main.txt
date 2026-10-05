@@ -1,0 +1,13 @@
+usage: devcap [-h] {scan,check,list-profiles} ...
+
+Scan your development environment for installed tools and capabilities.
+
+positional arguments:
+  {scan,check,list-profiles}
+    scan                Scan for installed tools
+    check               Check that required tools are installed (exit 1 if
+                        missing)
+    list-profiles       List available built-in profiles
+
+options:
+  -h, --help            show this help message and exit

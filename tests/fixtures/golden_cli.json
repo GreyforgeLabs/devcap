@@ -1,0 +1,998 @@
+[
+ {
+  "args": [],
+  "rc": 0,
+  "stdout": "usage: devcap [-h] {scan,check,list-profiles} ...\n\nScan your development environment for installed tools and capabilities.\n\npositional arguments:\n  {scan,check,list-profiles}\n    scan                Scan for installed tools\n    check               Check that required tools are installed (exit 1 if\n                        missing)\n    list-profiles       List available built-in profiles\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "--help"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap [-h] {scan,check,list-profiles} ...\n\nScan your development environment for installed tools and capabilities.\n\npositional arguments:\n  {scan,check,list-profiles}\n    scan                Scan for installed tools\n    check               Check that required tools are installed (exit 1 if\n                        missing)\n    list-profiles       List available built-in profiles\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "-h"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap [-h] {scan,check,list-profiles} ...\n\nScan your development environment for installed tools and capabilities.\n\npositional arguments:\n  {scan,check,list-profiles}\n    scan                Scan for installed tools\n    check               Check that required tools are installed (exit 1 if\n                        missing)\n    list-profiles       List available built-in profiles\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "--he"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap [-h] {scan,check,list-profiles} ...\n\nScan your development environment for installed tools and capabilities.\n\npositional arguments:\n  {scan,check,list-profiles}\n    scan                Scan for installed tools\n    check               Check that required tools are installed (exit 1 if\n                        missing)\n    list-profiles       List available built-in profiles\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "--h"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap [-h] {scan,check,list-profiles} ...\n\nScan your development environment for installed tools and capabilities.\n\npositional arguments:\n  {scan,check,list-profiles}\n    scan                Scan for installed tools\n    check               Check that required tools are installed (exit 1 if\n                        missing)\n    list-profiles       List available built-in profiles\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "scan",
+   "--help"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\n\noptions:\n  -h, --help            show this help message and exit\n  --format {text,json,markdown}\n                        Output format (default: text)\n  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)\n  --config CONFIG       Path to a custom TOML profile file\n  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)\n  --max-depth MAX_DEPTH\n                        Maximum parsed profile nesting depth (default: 16)\n  --max-workers MAX_WORKERS\n                        Maximum parallel probe workers (default: 16)\n  --no-parallel         Disable parallel scanning (useful for debugging)\n  --include-vendored    Allow executables from vendored/project-local PATH\n                        segments such as node_modules or .venv\n  --redact              Replace hostname, executable paths, and raw version\n                        banners with [redacted]\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "check",
+   "-h"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap check [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                    --config CONFIG] [--timeout TIMEOUT]\n                    [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                    [--no-parallel] [--include-vendored] [--redact]\n\noptions:\n  -h, --help            show this help message and exit\n  --format {text,json,markdown}\n                        Output format (default: text)\n  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)\n  --config CONFIG       Path to a custom TOML profile file\n  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)\n  --max-depth MAX_DEPTH\n                        Maximum parsed profile nesting depth (default: 16)\n  --max-workers MAX_WORKERS\n                        Maximum parallel probe workers (default: 16)\n  --no-parallel         Disable parallel scanning (useful for debugging)\n  --include-vendored    Allow executables from vendored/project-local PATH\n                        segments such as node_modules or .venv\n  --redact              Replace hostname, executable paths, and raw version\n                        banners with [redacted]\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "list-profiles",
+   "--help"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap list-profiles [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "list-profiles"
+  ],
+  "rc": 0,
+  "stdout": "Available profiles:\n  devops           DevOps and infrastructure toolchain (20 tools)\n  full             Complete scan of all known tools and services (103 tools)\n  node-dev         Node.js / JavaScript development environment (13 tools)\n  python-dev       Python development environment (12 tools)\n  rust-dev         Rust development environment (11 tools)\n  sysadmin         Linux system administration toolkit (22 tools)\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "0"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-depth",
+   "x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-depth: must be an integer\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--format",
+   "xml"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --format: invalid choice: 'xml' (choose from 'text', 'json', 'markdown')\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "a",
+   "--config",
+   "b"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --config: not allowed with argument --profile\n"
+ },
+ {
+  "args": [
+   "bogus"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: argument command: invalid choice: 'bogus' (choose from 'scan', 'check', 'list-profiles')\n"
+ },
+ {
+  "args": [
+   "--version"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: --version\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "../x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: profile name must be a command name, not a path or shell expression\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--config",
+   "/nonexist.toml"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: profile not found: /nonexist.toml\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--config",
+   "/etc/passwd"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: Profile must be a .toml file: /etc/passwd\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: expected one argument\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max",
+   "3"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: ambiguous option: --max could match --max-depth, --max-workers\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max=3"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: ambiguous option: --max=3 could match --max-depth, --max-workers\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--form",
+   "json",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "-1e5"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "-1x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be a number\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "-.5"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "-1 x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be a number\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "-x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --profile: expected one argument\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "-1"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: profile name must be a command name, not a path or shell expression\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "-x y"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: profile name must be a command name, not a path or shell expression\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--no-parallel=1"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --no-parallel: ignored explicit argument '1'\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--help=x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument -h/--help: ignored explicit argument 'x'\n"
+ },
+ {
+  "args": [
+   "scan",
+   "-hx"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\n\noptions:\n  -h, --help            show this help message and exit\n  --format {text,json,markdown}\n                        Output format (default: text)\n  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)\n  --config CONFIG       Path to a custom TOML profile file\n  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)\n  --max-depth MAX_DEPTH\n                        Maximum parsed profile nesting depth (default: 16)\n  --max-workers MAX_WORKERS\n                        Maximum parallel probe workers (default: 16)\n  --no-parallel         Disable parallel scanning (useful for debugging)\n  --include-vendored    Allow executables from vendored/project-local PATH\n                        segments such as node_modules or .venv\n  --redact              Replace hostname, executable paths, and raw version\n                        banners with [redacted]\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "scan",
+   "-hhx"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\n\noptions:\n  -h, --help            show this help message and exit\n  --format {text,json,markdown}\n                        Output format (default: text)\n  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)\n  --config CONFIG       Path to a custom TOML profile file\n  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)\n  --max-depth MAX_DEPTH\n                        Maximum parsed profile nesting depth (default: 16)\n  --max-workers MAX_WORKERS\n                        Maximum parallel probe workers (default: 16)\n  --no-parallel         Disable parallel scanning (useful for debugging)\n  --include-vendored    Allow executables from vendored/project-local PATH\n                        segments such as node_modules or .venv\n  --redact              Replace hostname, executable paths, and raw version\n                        banners with [redacted]\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "scan",
+   "-h=x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument -h/--help: ignored explicit argument 'x'\n"
+ },
+ {
+  "args": [
+   "scan",
+   "-h="
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument -h/--help: ignored explicit argument ''\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--redact="
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --redact: ignored explicit argument ''\n"
+ },
+ {
+  "args": [
+   "-x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -x\n"
+ },
+ {
+  "args": [
+   "-x",
+   "scan",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -x\n"
+ },
+ {
+  "args": [
+   "scan",
+   "foo",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: foo\n"
+ },
+ {
+  "args": [
+   "scan",
+   "foo"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: foo\n"
+ },
+ {
+  "args": [
+   "--",
+   "scan",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -- --profile nope\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile=nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile=",
+   "--timeout",
+   "0"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "--format",
+   "json"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: argument command: invalid choice: 'json' (choose from 'scan', 'check', 'list-profiles')\n"
+ },
+ {
+  "args": [
+   "scan",
+   "-h",
+   "--timeout",
+   "0"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\n\noptions:\n  -h, --help            show this help message and exit\n  --format {text,json,markdown}\n                        Output format (default: text)\n  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)\n  --config CONFIG       Path to a custom TOML profile file\n  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)\n  --max-depth MAX_DEPTH\n                        Maximum parsed profile nesting depth (default: 16)\n  --max-workers MAX_WORKERS\n                        Maximum parallel probe workers (default: 16)\n  --no-parallel         Disable parallel scanning (useful for debugging)\n  --include-vendored    Allow executables from vendored/project-local PATH\n                        segments such as node_modules or .venv\n  --redact              Replace hostname, executable paths, and raw version\n                        banners with [redacted]\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "0",
+   "-h"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "a",
+   "--profile",
+   "b"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'b'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "a",
+   "--config",
+   ""
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --config: not allowed with argument --profile\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--config",
+   "",
+   "--profile",
+   "a"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --profile: not allowed with argument --config\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "1__0"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be a number\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-depth",
+   " +0_8 ",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-depth",
+   "99999999999999999999999"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-depth: must be between 1 and 16\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-workers",
+   "٣",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "list-profiles",
+   "foo"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: foo\n"
+ },
+ {
+  "args": [
+   "list-profiles",
+   "--x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: --x\n"
+ },
+ {
+  "args": [
+   "scan",
+   "-"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: --\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout="
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be a number\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--format="
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --format: invalid choice: '' (choose from 'text', 'json', 'markdown')\n"
+ },
+ {
+  "args": [
+   "scan",
+   "-x",
+   "-y"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -x -y\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--tim",
+   "0"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "-=x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: ambiguous option: -=x could match -h, --help, --format, --profile, --config, --timeout, --max-depth, --max-workers, --no-parallel, --include-vendored, --redact\n"
+ },
+ {
+  "args": [
+   "-=x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: ambiguous option: -=x could match -h, --help\n"
+ },
+ {
+  "args": [
+   "--=x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: argument -h/--help: ignored explicit argument 'x'\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--=x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: ambiguous option: --=x could match --help, --format, --profile, --config, --timeout, --max-depth, --max-workers, --no-parallel, --include-vendored, --redact\n"
+ },
+ {
+  "args": [
+   "scan",
+   "---x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: ---x\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "nan"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "inf"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "61"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "-1"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-depth",
+   "0"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-depth: must be between 1 and 16\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-depth",
+   "17"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-depth: must be between 1 and 16\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-workers",
+   "0"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-workers: must be between 1 and 64\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-workers",
+   "65"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-workers: must be between 1 and 64\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-workers",
+   "1.5"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-workers: must be an integer\n"
+ },
+ {
+  "args": [
+   "check",
+   "--config",
+   "x",
+   "--profile",
+   "y"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap check [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                    --config CONFIG] [--timeout TIMEOUT]\n                    [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                    [--no-parallel] [--include-vendored] [--redact]\ndevcap check: error: argument --profile: not allowed with argument --config\n"
+ },
+ {
+  "args": [
+   ""
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: argument command: invalid choice: '' (choose from 'scan', 'check', 'list-profiles')\n"
+ },
+ {
+  "args": [
+   "-h",
+   "bogus"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap [-h] {scan,check,list-profiles} ...\n\nScan your development environment for installed tools and capabilities.\n\npositional arguments:\n  {scan,check,list-profiles}\n    scan                Scan for installed tools\n    check               Check that required tools are installed (exit 1 if\n                        missing)\n    list-profiles       List available built-in profiles\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "bogus",
+   "-h"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: argument command: invalid choice: 'bogus' (choose from 'scan', 'check', 'list-profiles')\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "nope",
+   "extra"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: extra\n"
+ },
+ {
+  "args": [
+   "check",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--max-depth",
+   "٠"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --max-depth: must be between 1 and 16\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "1e400"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--timeout",
+   "60.0000001"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --timeout: must be greater than 0 and at most 60\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "x y"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: profile name must be a command name, not a path or shell expression\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "full.toml"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'full.toml'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "Full"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'Full'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--config",
+   "/tmp"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: Profile must be a .toml file: /tmp\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--config",
+   "/"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: Profile must be a .toml file: /\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--config",
+   "/etc/x.TOML"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: Profile must be a .toml file: /etc/x.TOML\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--include",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--r",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--n",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--fo",
+   "x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                   --config CONFIG] [--timeout TIMEOUT]\n                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                   [--no-parallel] [--include-vendored] [--redact]\ndevcap scan: error: argument --format: invalid choice: 'x' (choose from 'text', 'json', 'markdown')\n"
+ },
+ {
+  "args": [
+   "check",
+   "-hfoo"
+  ],
+  "rc": 0,
+  "stdout": "usage: devcap check [-h] [--format {text,json,markdown}] [--profile PROFILE |\n                    --config CONFIG] [--timeout TIMEOUT]\n                    [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]\n                    [--no-parallel] [--include-vendored] [--redact]\n\noptions:\n  -h, --help            show this help message and exit\n  --format {text,json,markdown}\n                        Output format (default: text)\n  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)\n  --config CONFIG       Path to a custom TOML profile file\n  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)\n  --max-depth MAX_DEPTH\n                        Maximum parsed profile nesting depth (default: 16)\n  --max-workers MAX_WORKERS\n                        Maximum parallel probe workers (default: 16)\n  --no-parallel         Disable parallel scanning (useful for debugging)\n  --include-vendored    Allow executables from vendored/project-local PATH\n                        segments such as node_modules or .venv\n  --redact              Replace hostname, executable paths, and raw version\n                        banners with [redacted]\n",
+  "stderr": ""
+ },
+ {
+  "args": [
+   "scan",
+   "-f"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -f\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--format",
+   "json",
+   "--format",
+   "text",
+   "--profile",
+   "nope"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: unknown profile 'nope'\nAvailable: devops, full, node-dev, python-dev, rust-dev, sysadmin\n"
+ },
+ {
+  "args": [
+   "list-profiles",
+   "-h=1"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap list-profiles [-h]\ndevcap list-profiles: error: argument -h/--help: ignored explicit argument '1'\n"
+ },
+ {
+  "args": [
+   "list-profiles",
+   "--",
+   "x"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "usage: devcap [-h] {scan,check,list-profiles} ...\ndevcap: error: unrecognized arguments: -- x\n"
+ },
+ {
+  "args": [
+   "scan",
+   "--profile",
+   "-"
+  ],
+  "rc": 2,
+  "stdout": "",
+  "stderr": "Error: invalid profile: profile name must be a command name, not a path or shell expression\n"
+ }
+]

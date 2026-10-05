@@ -1,0 +1,4 @@
+usage: devcap check [-h] [--format {text,json,markdown}] [--profile PROFILE |
+                    --config CONFIG] [--timeout TIMEOUT]
+                    [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]
+                    [--no-parallel] [--include-vendored] [--redact]

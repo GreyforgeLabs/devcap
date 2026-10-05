@@ -1,0 +1,4 @@
+usage: devcap list-profiles [-h]
+
+options:
+  -h, --help  show this help message and exit

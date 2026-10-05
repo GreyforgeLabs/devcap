@@ -1,0 +1,21 @@
+usage: devcap scan [-h] [--format {text,json,markdown}] [--profile PROFILE |
+                   --config CONFIG] [--timeout TIMEOUT]
+                   [--max-depth MAX_DEPTH] [--max-workers MAX_WORKERS]
+                   [--no-parallel] [--include-vendored] [--redact]
+
+options:
+  -h, --help            show this help message and exit
+  --format {text,json,markdown}
+                        Output format (default: text)
+  --profile PROFILE     Built-in profile name (e.g. python-dev, devops, full)
+  --config CONFIG       Path to a custom TOML profile file
+  --timeout TIMEOUT     Per-probe timeout in seconds (default: 5)
+  --max-depth MAX_DEPTH
+                        Maximum parsed profile nesting depth (default: 16)
+  --max-workers MAX_WORKERS
+                        Maximum parallel probe workers (default: 16)
+  --no-parallel         Disable parallel scanning (useful for debugging)
+  --include-vendored    Allow executables from vendored/project-local PATH
+                        segments such as node_modules or .venv
+  --redact              Replace hostname, executable paths, and raw version
+                        banners with [redacted]

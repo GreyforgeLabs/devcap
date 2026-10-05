@@ -5,11 +5,17 @@
 *.md text diff=markdown
 *.txt text
 *.py text diff=python
+*.rs text diff=rust
 *.json text
 *.yml text
 *.yaml text
 *.toml text
 *.sh text eol=lf
+
+# Embedded verbatim into the binary (help text must stay byte-identical)
+src/help/* text eol=lf
+src/profiles/*.toml text eol=lf
+tests/fixtures/*.json text eol=lf
 
 # Binary files
 *.png binary

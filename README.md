@@ -5,6 +5,7 @@
 **Maintenance status (September 2026):** This standalone scanner is retained for existing users, but Greyforge no longer promotes it as an operator utility or expands its general tool registry. For a new project, declare required tools and versions in that project's setup and CI checks. `devcap check` checks presence of profile-required tools; it does not enforce version constraints. Existing releases and documentation remain available.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![Rust 1.88+](https://img.shields.io/badge/Rust-1.88%2B-orange.svg)](https://www.rust-lang.org)
 
 <p align="center">
   <img src="docs/assets/openforge-devcap.webp" alt="devcap OpenForge project artwork" width="720">
@@ -25,6 +26,22 @@ git clone https://github.com/GreyforgeLabs/devcap.git
 cd devcap
 ./scripts/setup.sh
 ```
+
+### Install
+
+devcap is a single native binary written in Rust. Build and install it from a checkout:
+
+```bash
+cargo install --path . --locked
+```
+
+Or build without installing (`target/release/devcap`):
+
+```bash
+cargo build --release --locked
+```
+
+Version 0.3.0 is a faithful Rust rewrite of the 0.2.x Python tool. The commands, flags, profiles, and output formats are unchanged. See [CHANGELOG.md](CHANGELOG.md) for the few intentional differences and [docs/benchmarks.md](docs/benchmarks.md) for measured startup, memory, and footprint numbers.
 
 ## Usage
 
@@ -68,7 +85,7 @@ devcap list-profiles
 | `python-dev` | Python development environment | 12 |
 | `node-dev` | Node.js / JavaScript development | 13 |
 | `rust-dev` | Rust development environment | 11 |
-| `devops` | DevOps and infrastructure | 21 |
+| `devops` | DevOps and infrastructure | 20 |
 | `sysadmin` | Linux system administration | 22 |
 
 ## Custom Profiles
@@ -148,14 +165,16 @@ Custom profiles execute local binaries to collect versions. Treat profiles from 
 
 ## Requirements
 
-- Python 3.11+
-- Zero runtime dependencies (stdlib only)
+- Linux or another Unix-like system (service checks use `systemctl` on Linux)
+- Building from source: Rust 1.88+ (`cargo`)
+- No runtime dependencies: the binary embeds the built-in profiles and needs no interpreter
 
 ## Documentation
 
 - [STARTHERE.md](STARTHERE.md) — AI coding client bootstrap
 - [CONTRIBUTING.md](CONTRIBUTING.md) — How to contribute
 - [CHANGELOG.md](CHANGELOG.md) — Version history
+- [docs/benchmarks.md](docs/benchmarks.md) — Python vs Rust performance measurements
 
 ## License
 

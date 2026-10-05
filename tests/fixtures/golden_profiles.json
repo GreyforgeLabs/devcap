@@ -1,0 +1,526 @@
+[
+ {
+  "name": "alias_bad.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCmFsaWFzZXM9WydhIGInXQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].aliases[] must be a command name, not a path or shell expression\n",
+  "stdout": ""
+ },
+ {
+  "name": "alias_int.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCmFsaWFzZXM9WzFdCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].aliases[] must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "aliases_many.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCmFsaWFzZXM9WydhMCcsJ2ExJywnYTInLCdhMycsJ2E0JywnYTUnLCdhNicsJ2E3JywnYTgnLCdhOScsJ2ExMCcsJ2ExMScsJ2ExMicsJ2ExMycsJ2ExNCcsJ2ExNScsJ2ExNiddCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].aliases has too many entries\n",
+  "stdout": ""
+ },
+ {
+  "name": "aliases_str.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCmFsaWFzZXM9J3knCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].aliases must be an array of strings\n",
+  "stdout": ""
+ },
+ {
+  "name": "arr_tbl.toml",
+  "content_b64": "W1thXV0KW2EuYl0KYz0xClthXQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Cannot declare ('a',) twice (at line 4, column 3)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml1.toml",
+  "content_b64": "W3Byb2ZpbGUK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Expected ']' at the end of a table declaration (at line 1, column 9)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml2.toml",
+  "content_b64": "YSA9IAo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Invalid value (at line 1, column 5)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml3.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWUgPSAieAo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Illegal character '\\n' (at line 2, column 10)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml4.toml",
+  "content_b64": "YT0xCmE9Mgo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Cannot overwrite a value (at line 2, column 4)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml5.toml",
+  "content_b64": "eCA9IDE5NzktMDItMzAK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Invalid date or datetime (at line 1, column 5)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml6.toml",
+  "content_b64": "eCA9IHthPTEsIGE9Mn0K",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Duplicate inline table key 'a' (at line 1, column 14)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml7.toml",
+  "content_b64": "eCA9IFsxLCwyXQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Invalid value (at line 1, column 8)\n",
+  "stdout": ""
+ },
+ {
+  "name": "bad_toml8.toml",
+  "content_b64": "eCA9ICdhACcK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Found invalid character '\\x00' (at line 1, column 7)\n",
+  "stdout": ""
+ },
+ {
+  "name": "binary_bad.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCmJpbmFyeT0nL2Jpbi9zaCcK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].binary must be a command name, not a path or shell expression\n",
+  "stdout": ""
+ },
+ {
+  "name": "binary_sh.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCmJpbmFyeT0nc2gnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: custom profile binary 'sh' is not allowed\n",
+  "stdout": ""
+ },
+ {
+  "name": "bom.toml",
+  "content_b64": "77u/W3Byb2ZpbGVdCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Invalid statement (at line 1, column 1)\n",
+  "stdout": ""
+ },
+ {
+  "name": "broken.toml",
+  "symlink": "nowhere.toml",
+  "rc": 2,
+  "stderr": "Error: profile not found: prof/broken.toml\n",
+  "stdout": ""
+ },
+ {
+  "name": "comment_only.toml",
+  "content_b64": "IyBub3RoaW5nCg==",
+  "rc": 0,
+  "stderr": "",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "crlf.toml",
+  "content_b64": "W3Byb2ZpbGVdDQpuYW1lID0gJ2NybGYnDQo=",
+  "rc": 0,
+  "stderr": "",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "date_val.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWUgPSAxOTc5LTA1LTI3Cg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile.name must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "deep.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWU9J3gnCltbdG9vbHNdXQpuYW1lPSd0JwphbGlhc2VzPVtbW1snYSddXV1dCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].aliases[] must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "deep17.toml",
+  "content_b64": "eCA9IFtbW1tbW1tbW1tbW1tbW1tbXV1dXV1dXV1dXV1dXV1dXV0K",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile nesting exceeds max_depth 16\n",
+  "stdout": ""
+ },
+ {
+  "name": "desc_int.toml",
+  "content_b64": "W3Byb2ZpbGVdCmRlc2NyaXB0aW9uPTUK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile.description must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "dir.toml",
+  "dir": true,
+  "rc": 2,
+  "stderr": "Error: invalid profile: Profile cannot be opened: <DIR>/prof/dir.toml: Is a directory\n",
+  "stdout": ""
+ },
+ {
+  "name": "dotted.toml",
+  "content_b64": "cHJvZmlsZS5uYW1lID0gJ2RvdHRlZCcK",
+  "rc": 0,
+  "stderr": "",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "dup.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J0N1c3RvbS1Ub29sJwpbW3Rvb2xzXV0KbmFtZT0nY3VzdG9tLXRvb2wnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: duplicate normalized tool name: 'custom-tool' conflicts with 'Custom-Tool'\n",
+  "stdout": ""
+ },
+ {
+  "name": "empty.toml",
+  "content_b64": "",
+  "rc": 0,
+  "stderr": "",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "esc_repr.toml",
+  "content_b64": "ImEnYiIgPSAxCiJhJ2IiID0gMgo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Cannot overwrite a value (at line 2, column 10)\n",
+  "stdout": ""
+ },
+ {
+  "name": "flag_c.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fZmxhZz0nLS1jb21tYW5kIHgnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: custom profile commands cannot pass interpreter command flags\n",
+  "stdout": ""
+ },
+ {
+  "name": "flag_empty.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fZmxhZz0nICAnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: version_flag must not be empty\n",
+  "stdout": ""
+ },
+ {
+  "name": "flag_esc.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fZmxhZz0nYWJjXFwnCg==",
+  "rc": 0,
+  "stderr": "",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "flag_many.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fZmxhZz0nYSBiIGMgZCBlIGYgZyBoIGknCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: version_flag has too many arguments\n",
+  "stdout": ""
+ },
+ {
+  "name": "flag_shell.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fZmxhZz0nLS12O2lkJwo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: custom version_flag contains shell-control characters\n",
+  "stdout": ""
+ },
+ {
+  "name": "flag_unclosed.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fZmxhZz0iJ2FiYyIK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: version_flag is invalid: No closing quotation\n",
+  "stdout": ""
+ },
+ {
+  "name": "float_val.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWUgPSBuYW4K",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile.name must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "huge.toml",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Profile is too large: <DIR>/prof/huge.toml\n",
+  "repeat_byte": "#",
+  "repeat_count": 1000001,
+  "stdout": ""
+ },
+ {
+  "name": "inline.toml",
+  "content_b64": "cHJvZmlsZSA9IHtuYW1lID0gJ2lubGluZScsIGRlc2NyaXB0aW9uID0gJ2QnfQp0b29scyA9IFt7bmFtZSA9ICdnaXQnfV0K",
+  "rc": 0,
+  "stderr": "",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "link.toml",
+  "symlink": "ok_custom.toml",
+  "rc": 1,
+  "stderr": "\nMissing required tools: zz-tool\n",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "lit_ml.toml",
+  "content_b64": "eCA9ICcnJwpsaW5lJycnCltwcm9maWxlXQpuYW1lID0gIiIiXAogICBtbCIiIgo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile document contains unknown key(s): x\n",
+  "stdout": ""
+ },
+ {
+  "name": "many_tools.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3QwJwpbW3Rvb2xzXV0KbmFtZT0ndDEnCltbdG9vbHNdXQpuYW1lPSd0MicKW1t0b29sc11dCm5hbWU9J3QzJwpbW3Rvb2xzXV0KbmFtZT0ndDQnCltbdG9vbHNdXQpuYW1lPSd0NScKW1t0b29sc11dCm5hbWU9J3Q2JwpbW3Rvb2xzXV0KbmFtZT0ndDcnCltbdG9vbHNdXQpuYW1lPSd0OCcKW1t0b29sc11dCm5hbWU9J3Q5JwpbW3Rvb2xzXV0KbmFtZT0ndDEwJwpbW3Rvb2xzXV0KbmFtZT0ndDExJwpbW3Rvb2xzXV0KbmFtZT0ndDEyJwpbW3Rvb2xzXV0KbmFtZT0ndDEzJwpbW3Rvb2xzXV0KbmFtZT0ndDE0JwpbW3Rvb2xzXV0KbmFtZT0ndDE1JwpbW3Rvb2xzXV0KbmFtZT0ndDE2JwpbW3Rvb2xzXV0KbmFtZT0ndDE3JwpbW3Rvb2xzXV0KbmFtZT0ndDE4JwpbW3Rvb2xzXV0KbmFtZT0ndDE5JwpbW3Rvb2xzXV0KbmFtZT0ndDIwJwpbW3Rvb2xzXV0KbmFtZT0ndDIxJwpbW3Rvb2xzXV0KbmFtZT0ndDIyJwpbW3Rvb2xzXV0KbmFtZT0ndDIzJwpbW3Rvb2xzXV0KbmFtZT0ndDI0JwpbW3Rvb2xzXV0KbmFtZT0ndDI1JwpbW3Rvb2xzXV0KbmFtZT0ndDI2JwpbW3Rvb2xzXV0KbmFtZT0ndDI3JwpbW3Rvb2xzXV0KbmFtZT0ndDI4JwpbW3Rvb2xzXV0KbmFtZT0ndDI5JwpbW3Rvb2xzXV0KbmFtZT0ndDMwJwpbW3Rvb2xzXV0KbmFtZT0ndDMxJwpbW3Rvb2xzXV0KbmFtZT0ndDMyJwpbW3Rvb2xzXV0KbmFtZT0ndDMzJwpbW3Rvb2xzXV0KbmFtZT0ndDM0JwpbW3Rvb2xzXV0KbmFtZT0ndDM1JwpbW3Rvb2xzXV0KbmFtZT0ndDM2JwpbW3Rvb2xzXV0KbmFtZT0ndDM3JwpbW3Rvb2xzXV0KbmFtZT0ndDM4JwpbW3Rvb2xzXV0KbmFtZT0ndDM5JwpbW3Rvb2xzXV0KbmFtZT0ndDQwJwpbW3Rvb2xzXV0KbmFtZT0ndDQxJwpbW3Rvb2xzXV0KbmFtZT0ndDQyJwpbW3Rvb2xzXV0KbmFtZT0ndDQzJwpbW3Rvb2xzXV0KbmFtZT0ndDQ0JwpbW3Rvb2xzXV0KbmFtZT0ndDQ1JwpbW3Rvb2xzXV0KbmFtZT0ndDQ2JwpbW3Rvb2xzXV0KbmFtZT0ndDQ3JwpbW3Rvb2xzXV0KbmFtZT0ndDQ4JwpbW3Rvb2xzXV0KbmFtZT0ndDQ5JwpbW3Rvb2xzXV0KbmFtZT0ndDUwJwpbW3Rvb2xzXV0KbmFtZT0ndDUxJwpbW3Rvb2xzXV0KbmFtZT0ndDUyJwpbW3Rvb2xzXV0KbmFtZT0ndDUzJwpbW3Rvb2xzXV0KbmFtZT0ndDU0JwpbW3Rvb2xzXV0KbmFtZT0ndDU1JwpbW3Rvb2xzXV0KbmFtZT0ndDU2JwpbW3Rvb2xzXV0KbmFtZT0ndDU3JwpbW3Rvb2xzXV0KbmFtZT0ndDU4JwpbW3Rvb2xzXV0KbmFtZT0ndDU5JwpbW3Rvb2xzXV0KbmFtZT0ndDYwJwpbW3Rvb2xzXV0KbmFtZT0ndDYxJwpbW3Rvb2xzXV0KbmFtZT0ndDYyJwpbW3Rvb2xzXV0KbmFtZT0ndDYzJwpbW3Rvb2xzXV0KbmFtZT0ndDY0JwpbW3Rvb2xzXV0KbmFtZT0ndDY1JwpbW3Rvb2xzXV0KbmFtZT0ndDY2JwpbW3Rvb2xzXV0KbmFtZT0ndDY3JwpbW3Rvb2xzXV0KbmFtZT0ndDY4JwpbW3Rvb2xzXV0KbmFtZT0ndDY5JwpbW3Rvb2xzXV0KbmFtZT0ndDcwJwpbW3Rvb2xzXV0KbmFtZT0ndDcxJwpbW3Rvb2xzXV0KbmFtZT0ndDcyJwpbW3Rvb2xzXV0KbmFtZT0ndDczJwpbW3Rvb2xzXV0KbmFtZT0ndDc0JwpbW3Rvb2xzXV0KbmFtZT0ndDc1JwpbW3Rvb2xzXV0KbmFtZT0ndDc2JwpbW3Rvb2xzXV0KbmFtZT0ndDc3JwpbW3Rvb2xzXV0KbmFtZT0ndDc4JwpbW3Rvb2xzXV0KbmFtZT0ndDc5JwpbW3Rvb2xzXV0KbmFtZT0ndDgwJwpbW3Rvb2xzXV0KbmFtZT0ndDgxJwpbW3Rvb2xzXV0KbmFtZT0ndDgyJwpbW3Rvb2xzXV0KbmFtZT0ndDgzJwpbW3Rvb2xzXV0KbmFtZT0ndDg0JwpbW3Rvb2xzXV0KbmFtZT0ndDg1JwpbW3Rvb2xzXV0KbmFtZT0ndDg2JwpbW3Rvb2xzXV0KbmFtZT0ndDg3JwpbW3Rvb2xzXV0KbmFtZT0ndDg4JwpbW3Rvb2xzXV0KbmFtZT0ndDg5JwpbW3Rvb2xzXV0KbmFtZT0ndDkwJwpbW3Rvb2xzXV0KbmFtZT0ndDkxJwpbW3Rvb2xzXV0KbmFtZT0ndDkyJwpbW3Rvb2xzXV0KbmFtZT0ndDkzJwpbW3Rvb2xzXV0KbmFtZT0ndDk0JwpbW3Rvb2xzXV0KbmFtZT0ndDk1JwpbW3Rvb2xzXV0KbmFtZT0ndDk2JwpbW3Rvb2xzXV0KbmFtZT0ndDk3JwpbW3Rvb2xzXV0KbmFtZT0ndDk4JwpbW3Rvb2xzXV0KbmFtZT0ndDk5JwpbW3Rvb2xzXV0KbmFtZT0ndDEwMCcKW1t0b29sc11dCm5hbWU9J3QxMDEnCltbdG9vbHNdXQpuYW1lPSd0MTAyJwpbW3Rvb2xzXV0KbmFtZT0ndDEwMycKW1t0b29sc11dCm5hbWU9J3QxMDQnCltbdG9vbHNdXQpuYW1lPSd0MTA1JwpbW3Rvb2xzXV0KbmFtZT0ndDEwNicKW1t0b29sc11dCm5hbWU9J3QxMDcnCltbdG9vbHNdXQpuYW1lPSd0MTA4JwpbW3Rvb2xzXV0KbmFtZT0ndDEwOScKW1t0b29sc11dCm5hbWU9J3QxMTAnCltbdG9vbHNdXQpuYW1lPSd0MTExJwpbW3Rvb2xzXV0KbmFtZT0ndDExMicKW1t0b29sc11dCm5hbWU9J3QxMTMnCltbdG9vbHNdXQpuYW1lPSd0MTE0JwpbW3Rvb2xzXV0KbmFtZT0ndDExNScKW1t0b29sc11dCm5hbWU9J3QxMTYnCltbdG9vbHNdXQpuYW1lPSd0MTE3JwpbW3Rvb2xzXV0KbmFtZT0ndDExOCcKW1t0b29sc11dCm5hbWU9J3QxMTknCltbdG9vbHNdXQpuYW1lPSd0MTIwJwpbW3Rvb2xzXV0KbmFtZT0ndDEyMScKW1t0b29sc11dCm5hbWU9J3QxMjInCltbdG9vbHNdXQpuYW1lPSd0MTIzJwpbW3Rvb2xzXV0KbmFtZT0ndDEyNCcKW1t0b29sc11dCm5hbWU9J3QxMjUnCltbdG9vbHNdXQpuYW1lPSd0MTI2JwpbW3Rvb2xzXV0KbmFtZT0ndDEyNycKW1t0b29sc11dCm5hbWU9J3QxMjgnCltbdG9vbHNdXQpuYW1lPSd0MTI5JwpbW3Rvb2xzXV0KbmFtZT0ndDEzMCcKW1t0b29sc11dCm5hbWU9J3QxMzEnCltbdG9vbHNdXQpuYW1lPSd0MTMyJwpbW3Rvb2xzXV0KbmFtZT0ndDEzMycKW1t0b29sc11dCm5hbWU9J3QxMzQnCltbdG9vbHNdXQpuYW1lPSd0MTM1JwpbW3Rvb2xzXV0KbmFtZT0ndDEzNicKW1t0b29sc11dCm5hbWU9J3QxMzcnCltbdG9vbHNdXQpuYW1lPSd0MTM4JwpbW3Rvb2xzXV0KbmFtZT0ndDEzOScKW1t0b29sc11dCm5hbWU9J3QxNDAnCltbdG9vbHNdXQpuYW1lPSd0MTQxJwpbW3Rvb2xzXV0KbmFtZT0ndDE0MicKW1t0b29sc11dCm5hbWU9J3QxNDMnCltbdG9vbHNdXQpuYW1lPSd0MTQ0JwpbW3Rvb2xzXV0KbmFtZT0ndDE0NScKW1t0b29sc11dCm5hbWU9J3QxNDYnCltbdG9vbHNdXQpuYW1lPSd0MTQ3JwpbW3Rvb2xzXV0KbmFtZT0ndDE0OCcKW1t0b29sc11dCm5hbWU9J3QxNDknCltbdG9vbHNdXQpuYW1lPSd0MTUwJwpbW3Rvb2xzXV0KbmFtZT0ndDE1MScKW1t0b29sc11dCm5hbWU9J3QxNTInCltbdG9vbHNdXQpuYW1lPSd0MTUzJwpbW3Rvb2xzXV0KbmFtZT0ndDE1NCcKW1t0b29sc11dCm5hbWU9J3QxNTUnCltbdG9vbHNdXQpuYW1lPSd0MTU2JwpbW3Rvb2xzXV0KbmFtZT0ndDE1NycKW1t0b29sc11dCm5hbWU9J3QxNTgnCltbdG9vbHNdXQpuYW1lPSd0MTU5JwpbW3Rvb2xzXV0KbmFtZT0ndDE2MCcKW1t0b29sc11dCm5hbWU9J3QxNjEnCltbdG9vbHNdXQpuYW1lPSd0MTYyJwpbW3Rvb2xzXV0KbmFtZT0ndDE2MycKW1t0b29sc11dCm5hbWU9J3QxNjQnCltbdG9vbHNdXQpuYW1lPSd0MTY1JwpbW3Rvb2xzXV0KbmFtZT0ndDE2NicKW1t0b29sc11dCm5hbWU9J3QxNjcnCltbdG9vbHNdXQpuYW1lPSd0MTY4JwpbW3Rvb2xzXV0KbmFtZT0ndDE2OScKW1t0b29sc11dCm5hbWU9J3QxNzAnCltbdG9vbHNdXQpuYW1lPSd0MTcxJwpbW3Rvb2xzXV0KbmFtZT0ndDE3MicKW1t0b29sc11dCm5hbWU9J3QxNzMnCltbdG9vbHNdXQpuYW1lPSd0MTc0JwpbW3Rvb2xzXV0KbmFtZT0ndDE3NScKW1t0b29sc11dCm5hbWU9J3QxNzYnCltbdG9vbHNdXQpuYW1lPSd0MTc3JwpbW3Rvb2xzXV0KbmFtZT0ndDE3OCcKW1t0b29sc11dCm5hbWU9J3QxNzknCltbdG9vbHNdXQpuYW1lPSd0MTgwJwpbW3Rvb2xzXV0KbmFtZT0ndDE4MScKW1t0b29sc11dCm5hbWU9J3QxODInCltbdG9vbHNdXQpuYW1lPSd0MTgzJwpbW3Rvb2xzXV0KbmFtZT0ndDE4NCcKW1t0b29sc11dCm5hbWU9J3QxODUnCltbdG9vbHNdXQpuYW1lPSd0MTg2JwpbW3Rvb2xzXV0KbmFtZT0ndDE4NycKW1t0b29sc11dCm5hbWU9J3QxODgnCltbdG9vbHNdXQpuYW1lPSd0MTg5JwpbW3Rvb2xzXV0KbmFtZT0ndDE5MCcKW1t0b29sc11dCm5hbWU9J3QxOTEnCltbdG9vbHNdXQpuYW1lPSd0MTkyJwpbW3Rvb2xzXV0KbmFtZT0ndDE5MycKW1t0b29sc11dCm5hbWU9J3QxOTQnCltbdG9vbHNdXQpuYW1lPSd0MTk1JwpbW3Rvb2xzXV0KbmFtZT0ndDE5NicKW1t0b29sc11dCm5hbWU9J3QxOTcnCltbdG9vbHNdXQpuYW1lPSd0MTk4JwpbW3Rvb2xzXV0KbmFtZT0ndDE5OScKW1t0b29sc11dCm5hbWU9J3QyMDAnCltbdG9vbHNdXQpuYW1lPSd0MjAxJwpbW3Rvb2xzXV0KbmFtZT0ndDIwMicKW1t0b29sc11dCm5hbWU9J3QyMDMnCltbdG9vbHNdXQpuYW1lPSd0MjA0JwpbW3Rvb2xzXV0KbmFtZT0ndDIwNScKW1t0b29sc11dCm5hbWU9J3QyMDYnCltbdG9vbHNdXQpuYW1lPSd0MjA3JwpbW3Rvb2xzXV0KbmFtZT0ndDIwOCcKW1t0b29sc11dCm5hbWU9J3QyMDknCltbdG9vbHNdXQpuYW1lPSd0MjEwJwpbW3Rvb2xzXV0KbmFtZT0ndDIxMScKW1t0b29sc11dCm5hbWU9J3QyMTInCltbdG9vbHNdXQpuYW1lPSd0MjEzJwpbW3Rvb2xzXV0KbmFtZT0ndDIxNCcKW1t0b29sc11dCm5hbWU9J3QyMTUnCltbdG9vbHNdXQpuYW1lPSd0MjE2JwpbW3Rvb2xzXV0KbmFtZT0ndDIxNycKW1t0b29sc11dCm5hbWU9J3QyMTgnCltbdG9vbHNdXQpuYW1lPSd0MjE5JwpbW3Rvb2xzXV0KbmFtZT0ndDIyMCcKW1t0b29sc11dCm5hbWU9J3QyMjEnCltbdG9vbHNdXQpuYW1lPSd0MjIyJwpbW3Rvb2xzXV0KbmFtZT0ndDIyMycKW1t0b29sc11dCm5hbWU9J3QyMjQnCltbdG9vbHNdXQpuYW1lPSd0MjI1JwpbW3Rvb2xzXV0KbmFtZT0ndDIyNicKW1t0b29sc11dCm5hbWU9J3QyMjcnCltbdG9vbHNdXQpuYW1lPSd0MjI4JwpbW3Rvb2xzXV0KbmFtZT0ndDIyOScKW1t0b29sc11dCm5hbWU9J3QyMzAnCltbdG9vbHNdXQpuYW1lPSd0MjMxJwpbW3Rvb2xzXV0KbmFtZT0ndDIzMicKW1t0b29sc11dCm5hbWU9J3QyMzMnCltbdG9vbHNdXQpuYW1lPSd0MjM0JwpbW3Rvb2xzXV0KbmFtZT0ndDIzNScKW1t0b29sc11dCm5hbWU9J3QyMzYnCltbdG9vbHNdXQpuYW1lPSd0MjM3JwpbW3Rvb2xzXV0KbmFtZT0ndDIzOCcKW1t0b29sc11dCm5hbWU9J3QyMzknCltbdG9vbHNdXQpuYW1lPSd0MjQwJwpbW3Rvb2xzXV0KbmFtZT0ndDI0MScKW1t0b29sc11dCm5hbWU9J3QyNDInCltbdG9vbHNdXQpuYW1lPSd0MjQzJwpbW3Rvb2xzXV0KbmFtZT0ndDI0NCcKW1t0b29sc11dCm5hbWU9J3QyNDUnCltbdG9vbHNdXQpuYW1lPSd0MjQ2JwpbW3Rvb2xzXV0KbmFtZT0ndDI0NycKW1t0b29sc11dCm5hbWU9J3QyNDgnCltbdG9vbHNdXQpuYW1lPSd0MjQ5JwpbW3Rvb2xzXV0KbmFtZT0ndDI1MCcKW1t0b29sc11dCm5hbWU9J3QyNTEnCltbdG9vbHNdXQpuYW1lPSd0MjUyJwpbW3Rvb2xzXV0KbmFtZT0ndDI1MycKW1t0b29sc11dCm5hbWU9J3QyNTQnCltbdG9vbHNdXQpuYW1lPSd0MjU1JwpbW3Rvb2xzXV0KbmFtZT0ndDI1NicK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile has too many tools\n",
+  "stdout": ""
+ },
+ {
+  "name": "name_ctrl.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J2FcdTAwMDEnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].name must be a command name, not a path or shell expression\n",
+  "stdout": ""
+ },
+ {
+  "name": "name_int.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9MQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].name must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "name_long.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J2FhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYScK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].name is too long\n",
+  "stdout": ""
+ },
+ {
+  "name": "name_missing.toml",
+  "content_b64": "W1t0b29sc11dCmNhdGVnb3J5PSd4Jwo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].name is required\n",
+  "stdout": ""
+ },
+ {
+  "name": "name_path.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9Jy4uL3gnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].name must be a command name, not a path or shell expression\n",
+  "stdout": ""
+ },
+ {
+  "name": "notutf8.toml",
+  "content_b64": "//4=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Profile must be UTF-8: <DIR>/prof/notutf8.toml\n",
+  "stdout": ""
+ },
+ {
+  "name": "ok_custom.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWU9J29rJwpbW3Rvb2xzXV0KbmFtZT0nenotdG9vbCcKYmluYXJ5PSd6ei1taXNzaW5nJwpyZXF1aXJlZD10cnVlCg==",
+  "rc": 1,
+  "stderr": "\nMissing required tools: zz-tool\n",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "prof_str.toml",
+  "content_b64": "cHJvZmlsZSA9ICd4Jwo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: [profile] must be a TOML table\n",
+  "stdout": ""
+ },
+ {
+  "name": "redefine.toml",
+  "content_b64": "W2FdCmIuYyA9IDEKW2EuYl0K",
+  "rc": 2,
+  "stderr": "Error: invalid profile: Cannot declare ('a', 'b') twice (at line 3, column 5)\n",
+  "stdout": ""
+ },
+ {
+  "name": "reg_alias_change.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J25vZGUnCmFsaWFzZXM9Wydub2RlanMnXQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: custom profile binary 'node' is not allowed\n",
+  "stdout": ""
+ },
+ {
+  "name": "reg_same.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J25vZGUnCnJlcXVpcmVkPXRydWUK",
+  "rc": 1,
+  "stderr": "\nMissing required tools: node\n",
+  "stdout_json_keys": [
+   "hostname",
+   "timestamp",
+   "platform",
+   "tools",
+   "services"
+  ]
+ },
+ {
+  "name": "req_str.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnJlcXVpcmVkPSd5ZXMnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].required must be a boolean\n",
+  "stdout": ""
+ },
+ {
+  "name": "src_bad.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCnZlcnNpb25fc291cmNlPSdib3RoJwo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[].version_source must be stdout or stderr\n",
+  "stdout": ""
+ },
+ {
+  "name": "svc_int.toml",
+  "content_b64": "W3NlcnZpY2VzXQpzeXN0ZW09WzFdCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: services.system[] must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "svc_many.toml",
+  "content_b64": "W3NlcnZpY2VzXQpzeXN0ZW09WydzMCcsJ3MxJywnczInLCdzMycsJ3M0JywnczUnLCdzNicsJ3M3JywnczgnLCdzOScsJ3MxMCcsJ3MxMScsJ3MxMicsJ3MxMycsJ3MxNCcsJ3MxNScsJ3MxNicsJ3MxNycsJ3MxOCcsJ3MxOScsJ3MyMCcsJ3MyMScsJ3MyMicsJ3MyMycsJ3MyNCcsJ3MyNScsJ3MyNicsJ3MyNycsJ3MyOCcsJ3MyOScsJ3MzMCcsJ3MzMScsJ3MzMicsJ3MzMycsJ3MzNCcsJ3MzNScsJ3MzNicsJ3MzNycsJ3MzOCcsJ3MzOScsJ3M0MCcsJ3M0MScsJ3M0MicsJ3M0MycsJ3M0NCcsJ3M0NScsJ3M0NicsJ3M0NycsJ3M0OCcsJ3M0OScsJ3M1MCcsJ3M1MScsJ3M1MicsJ3M1MycsJ3M1NCcsJ3M1NScsJ3M1NicsJ3M1NycsJ3M1OCcsJ3M1OScsJ3M2MCcsJ3M2MScsJ3M2MicsJ3M2MycsJ3M2NCcsJ3M2NScsJ3M2NicsJ3M2NycsJ3M2OCcsJ3M2OSddCnVzZXI9Wyd1MCcsJ3UxJywndTInLCd1MycsJ3U0JywndTUnLCd1NicsJ3U3JywndTgnLCd1OScsJ3UxMCcsJ3UxMScsJ3UxMicsJ3UxMycsJ3UxNCcsJ3UxNScsJ3UxNicsJ3UxNycsJ3UxOCcsJ3UxOScsJ3UyMCcsJ3UyMScsJ3UyMicsJ3UyMycsJ3UyNCcsJ3UyNScsJ3UyNicsJ3UyNycsJ3UyOCcsJ3UyOScsJ3UzMCcsJ3UzMScsJ3UzMicsJ3UzMycsJ3UzNCcsJ3UzNScsJ3UzNicsJ3UzNycsJ3UzOCcsJ3UzOScsJ3U0MCcsJ3U0MScsJ3U0MicsJ3U0MycsJ3U0NCcsJ3U0NScsJ3U0NicsJ3U0NycsJ3U0OCcsJ3U0OScsJ3U1MCcsJ3U1MScsJ3U1MicsJ3U1MycsJ3U1NCcsJ3U1NScsJ3U1NicsJ3U1NycsJ3U1OCcsJ3U1OScsJ3U2MCcsJ3U2MScsJ3U2MicsJ3U2MycsJ3U2NCcsJ3U2NScsJ3U2NicsJ3U2NycsJ3U2OCcsJ3U2OSddCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile has too many services\n",
+  "stdout": ""
+ },
+ {
+  "name": "svc_opt.toml",
+  "content_b64": "W3NlcnZpY2VzXQpzeXN0ZW09WyctLXVzZXInXQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: services.system[] must be a systemd unit name, not an option or path\n",
+  "stdout": ""
+ },
+ {
+  "name": "svc_str.toml",
+  "content_b64": "c2VydmljZXMgPSAxCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: [services] must be a TOML table\n",
+  "stdout": ""
+ },
+ {
+  "name": "svc_user_bad.toml",
+  "content_b64": "W3NlcnZpY2VzXQp1c2VyPVsnYS9iJ10K",
+  "rc": 2,
+  "stderr": "Error: invalid profile: services.user[] must be a systemd unit name, not an option or path\n",
+  "stdout": ""
+ },
+ {
+  "name": "time_val.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWUgPSAwNzozMjowMAo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile.name must be a string\n",
+  "stdout": ""
+ },
+ {
+  "name": "tool_notable.toml",
+  "content_b64": "dG9vbHMgPSBbMV0K",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools entries must be TOML tables\n",
+  "stdout": ""
+ },
+ {
+  "name": "tools_str.toml",
+  "content_b64": "dG9vbHMgPSAncHl0aG9uMycK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools must be an array of TOML tables\n",
+  "stdout": ""
+ },
+ {
+  "name": "trusted_reg.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3B5dGhvbjMnCnZlcnNpb25fZmxhZz0nLWMgaWQnCg==",
+  "rc": 2,
+  "stderr": "Error: invalid profile: custom profile commands cannot pass interpreter command flags\n",
+  "stdout": ""
+ },
+ {
+  "name": "unicode_key.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWU9J8OpJwon0LrQu9GO0YcnID0gMQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: [profile] contains unknown key(s): ключ\n",
+  "stdout": ""
+ },
+ {
+  "name": "unknown_prof.toml",
+  "content_b64": "W3Byb2ZpbGVdCm5hbWU9J3gnCm15c3Rlcnk9dHJ1ZQp6ZXRhPTEK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: [profile] contains unknown key(s): mystery, zeta\n",
+  "stdout": ""
+ },
+ {
+  "name": "unknown_svc.toml",
+  "content_b64": "W3NlcnZpY2VzXQpzeXN0ZW09W10KbXlzdGVyeT1bXQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: [services] contains unknown key(s): mystery\n",
+  "stdout": ""
+ },
+ {
+  "name": "unknown_tool.toml",
+  "content_b64": "W1t0b29sc11dCm5hbWU9J3gnCm15c3Rlcnk9dHJ1ZQo=",
+  "rc": 2,
+  "stderr": "Error: invalid profile: tools[] contains unknown key(s): mystery\n",
+  "stdout": ""
+ },
+ {
+  "name": "unknown_top.toml",
+  "content_b64": "bXlzdGVyeSA9IHRydWUK",
+  "rc": 2,
+  "stderr": "Error: invalid profile: profile document contains unknown key(s): mystery\n",
+  "stdout": ""
+ }
+]

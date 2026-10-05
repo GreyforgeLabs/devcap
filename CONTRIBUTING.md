@@ -40,13 +40,13 @@ chore: update dependencies
 - Write tests for new functionality
 - Update documentation for user-facing changes
 - No secrets, credentials, or internal paths in your code
-- Run `ruff check .` before committing
+- Run `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings`, and `cargo test --locked` before committing
 
 ## Adding a New Tool
 
-1. Add a `ToolDef` entry in `src/devcap/registry.py`
-2. Add the tool to relevant TOML profiles in `src/devcap/profiles/`
-3. Run tests: `pytest`
+1. Add a `ToolDef` entry in `registry_tools()` in `src/registry.rs`
+2. Add the tool to relevant TOML profiles in `src/profiles/`
+3. Run tests: `cargo test --locked`
 
 ## Reporting Issues
 
