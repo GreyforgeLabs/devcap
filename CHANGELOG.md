@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
-- The probe runner multiplexes both output pipes and a Linux pidfd with `poll(2)` on the worker thread, replacing three helper threads per probe. Timeouts, the 64 KiB output cap, the 250 ms post-exit grace for descendants that hold the pipes, and process-group cleanup work as before. A full scan on greyarch starts 16 threads instead of 172. For 100 fast probes, wall time drops from 125.3 ms to 79.2 ms and devcap's own CPU time from 135.7 ms to 62.4 ms. The stripped binary is 707,472 B, down from 750,944 B. See `docs/benchmarks.md`.
+- The probe runner multiplexes both output pipes and a Linux pidfd with `poll(2)` on the worker thread, replacing three helper threads per probe. Timeouts, the 64 KiB output cap, the 250 ms post-exit grace for descendants that hold the pipes, and process-group cleanup work as before. A full scan on the reference host starts 16 threads instead of 172. For 100 fast probes, wall time drops from 125.3 ms to 79.2 ms and devcap's own CPU time from 135.7 ms to 62.4 ms. The stripped binary is 707,472 B, down from 750,944 B. See `docs/benchmarks.md`.
 - A scan captures `PATH` and the working directory once rather than once per tool.
 
 ## [0.3.0] - 2026-10-05
@@ -29,7 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Kept the CLI the same: subcommands, flags, defaults, help text, error messages, exit codes, the profile file format, and text, JSON, and Markdown output, including JSON key order and `ensure_ascii` escaping.
 - Ported argparse behavior (prefix abbreviations, `--opt=value`, ambiguous-option errors, `--` handling) and the CPython `tomllib` parser, so usage errors and TOML error messages (`... (at line L, column C)`) read exactly as they did before.
 - Version probes still run in a bounded worker pool (`--max-workers`, default 16), with the same per-probe timeout, 64 KiB per-stream output cap, process-group kill, minimal `LANG=C` environment, and new-session (`setsid`) isolation. Each probe calls `execve` directly, as CPython did, so an executable without a shebang is never re-run through `/bin/sh`. Results keep profile order.
-- Measured on greyarch (Linux x86_64; details in `docs/benchmarks.md`): `--help` starts in 2.2 ms instead of 76.4 ms. `scan --profile python-dev` takes 15.6 ms instead of 101.6 ms. A full 103-tool scan takes 623 ms instead of 755 ms; that scan cannot finish faster than its slowest probe, about 580 ms here. devcap's own peak RSS during a full scan is 4.3 MiB instead of 22.4 MiB. The stripped binary is 751 KB.
+- Measured on the reference host (Linux x86_64; details in `docs/benchmarks.md`): `--help` starts in 2.2 ms instead of 76.4 ms. `scan --profile python-dev` takes 15.6 ms instead of 101.6 ms. A full 103-tool scan takes 623 ms instead of 755 ms; that scan cannot finish faster than its slowest probe, about 580 ms here. devcap's own peak RSS during a full scan is 4.3 MiB instead of 22.4 MiB. The stripped binary is 751 KB.
 - Replaced the Python packaging, PyPI publish workflow, and pytest suite with Cargo, a cargo-based CI and release workflow, and Rust tests. Every original test case was ported, and new golden tests replay outputs captured from the Python 0.2.1 implementation.
 - Corrected the README profile table: `devops` lists 20 tools, not 21.
 

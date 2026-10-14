@@ -1,6 +1,6 @@
 # Benchmarks: Python 0.2.1 vs Rust 0.3.0
 
-Measured on 2026-10-05 on `greyarch`: Linux 7.2.5 x86_64, 12 cores, 16 GB RAM.
+Measured on 2026-10-05 on the reference host: Linux 7.2.5 x86_64, 12 cores, 16 GB RAM.
 Python 3.14.7 ran the 0.2.1 sources (`PYTHONPATH=src python3 -m devcap`).
 Rust 1.98.1 built the 0.3.0 release profile (`cargo build --release --locked`:
 `opt-level = 3`, fat LTO, one codegen unit, stripped, `panic = "abort"`).
@@ -93,7 +93,7 @@ tables that make version parsing and text cleanup match CPython exactly.
 
 ## 0.3.1 probe runner (2026-10-14)
 
-Measured on `greyarch` (Linux 7.2.5 x86_64, 12 cores, load average 16 to 20
+Measured on the reference host (Linux 7.2.5 x86_64, 12 cores, load average 16 to 20
 from unrelated jobs) with Rust 1.98.1 and the same release profile. Both
 binaries ran interleaved (A, B, A, B, ...) inside
 `systemd-run --user --scope -p MemoryMax=3G -p CPUQuota=300% nice -n 10`.
