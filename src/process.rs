@@ -195,6 +195,21 @@ impl Capture {
     }
 }
 
+#[cfg(test)]
+thread_local! {
+    /// Test switch: run the no-pidfd fallback (timed exit checks) on Linux.
+    static NO_PIDFD: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// A descriptor that becomes readable when the child exits, if available.
+fn exit_fd(pid: u32) -> Option<OwnedFd> {
+    #[cfg(test)]
+    if NO_PIDFD.with(|flag| flag.get()) {
+        return None;
+    }
+    sys::pidfd_open(pid)
+}
+
 /// Run a command with bounded time/output and process-group cleanup.
 ///
 /// The probe's stdin is `/dev/null`. Both output pipes and (on Linux) a
@@ -237,7 +252,7 @@ pub fn run_command(
     };
     let pid = child.id();
     let deadline = Instant::now() + Duration::from_secs_f64(timeout);
-    let pidfd = sys::pidfd_open(pid);
+    let pidfd = exit_fd(pid);
     let mut streams = [
         Capture::new(child.stdout.take()),
         Capture::new(child.stderr.take()),
@@ -540,5 +555,82 @@ mod tests {
             .unwrap();
         assert_eq!(killed.returncode, -libc::SIGTERM);
         assert_eq!(killed.stdout_text(), "partial\n");
+    }
+
+    /// Process state letter from `/proc/<pid>/stat`, `None` once it is gone.
+    fn proc_state(pid: &str) -> Option<char> {
+        let stat = std::fs::read_to_string(format!("/proc/{pid}/stat")).ok()?;
+        stat.rsplit_once(") ")?.1.chars().next()
+    }
+
+    /// The same supervision scenarios with a pidfd and with the timed
+    /// exit-check fallback used where pidfds are unavailable.
+    #[test]
+    fn supervision_works_with_and_without_pidfd() {
+        if !std::path::Path::new("/proc/self/stat").exists() {
+            return;
+        }
+        for no_pidfd in [false, true] {
+            NO_PIDFD.with(|flag| flag.set(no_pidfd));
+            let mode = if no_pidfd { "fallback" } else { "pidfd" };
+
+            // Pipes close before the exit: the exit status is still awaited.
+            let started = Instant::now();
+            let result = run_command(
+                &sh("echo v 1.0; exec >&- 2>&-; sleep 0.3; exit 3"),
+                None,
+                5.0,
+                1024,
+            )
+            .unwrap()
+            .unwrap();
+            assert_eq!(result.returncode, 3, "{mode}");
+            assert_eq!(result.stdout_text(), "v 1.0\n", "{mode}");
+            assert!(started.elapsed() >= Duration::from_millis(300), "{mode}");
+
+            // Exit while a descendant holds the pipes: short grace, no hang.
+            let started = Instant::now();
+            let result = run_command(&sh("sleep 30 & echo tool 2.0"), None, 10.0, 1024)
+                .unwrap()
+                .unwrap();
+            assert_eq!(
+                (result.returncode, result.stdout_text().as_str()),
+                (0, "tool 2.0\n"),
+                "{mode}"
+            );
+            assert!(started.elapsed() < Duration::from_secs(3), "{mode}");
+
+            // Output cap: truncated and the group killed.
+            let result = run_command(&sh("yes; sleep 30"), None, 10.0, 1000)
+                .unwrap()
+                .unwrap();
+            assert!(result.output_truncated, "{mode}");
+            assert_eq!(result.stdout.len(), 1000, "{mode}");
+
+            // Timeout: the probe is reaped (no zombie) and its group killed.
+            let dir = tempfile::tempdir().unwrap();
+            let pids = dir.path().join("pids");
+            let script = format!("sleep 30 & echo $$ $! > '{}'; wait", pids.display());
+            let started = Instant::now();
+            assert_eq!(
+                run_command(&sh(&script), None, 0.5, 1024),
+                Ok(None),
+                "{mode}"
+            );
+            assert!(started.elapsed() < Duration::from_secs(3), "{mode}");
+            let text = std::fs::read_to_string(&pids).unwrap();
+            let (shell, background) = text.trim().split_once(' ').unwrap();
+            assert_eq!(proc_state(shell), None, "{mode}: probe not reaped");
+            let gone = (0..200).any(|_| {
+                let state = proc_state(background);
+                if matches!(state, None | Some('Z')) {
+                    return true;
+                }
+                std::thread::sleep(Duration::from_millis(10));
+                false
+            });
+            assert!(gone, "{mode}: background process survived the timeout");
+        }
+        NO_PIDFD.with(|flag| flag.set(false));
     }
 }
