@@ -1,13 +1,12 @@
 //! Bounded subprocess execution with process-group cleanup
 //! (port of `scanner._run_command`).
 
+use std::fs::File;
 use std::io::Read;
+use std::os::fd::{AsRawFd, OwnedFd};
+use std::os::unix::process::ExitStatusExt;
 use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::{self, RecvTimeoutError};
-use std::sync::{Arc, Mutex};
-use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use crate::sys;
 
@@ -16,8 +15,10 @@ pub const MAX_COMMAND_TIMEOUT_SECONDS: f64 = 60.0;
 pub const MAX_COMMAND_OUTPUT_BYTES: usize = 64 * 1024;
 
 const READ_CHUNK: usize = 4096;
+/// Grace period for output pipes after the probe exits.
 const READER_JOIN: Duration = Duration::from_millis(250);
-const HELPER_STACK: usize = 64 * 1024;
+/// Exit-check interval when no pidfd is available (non-Linux, old kernels).
+const EXIT_POLL_MS: u128 = 10;
 
 /// Bounded subprocess result with explicit truncation state.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -84,8 +85,44 @@ fn pathlib_parent(executable: &str) -> String {
     }
 }
 
+/// Non-secret locator variables passed through to probes when they hold an
+/// absolute path. Version-manager shims (mise, asdf, pyenv, rbenv, nodenv,
+/// Volta, rustup) need them to find the toolchain the user's shell would run;
+/// without `HOME` they print an error banner instead of the tool's version.
+pub const PROBE_LOCATOR_VARS: &[&str] = &[
+    "HOME",
+    "XDG_CONFIG_HOME",
+    "XDG_DATA_HOME",
+    "XDG_CACHE_HOME",
+    "XDG_STATE_HOME",
+    "ASDF_DIR",
+    "ASDF_DATA_DIR",
+    "MISE_DATA_DIR",
+    "MISE_CONFIG_DIR",
+    "PYENV_ROOT",
+    "RBENV_ROOT",
+    "NODENV_ROOT",
+    "VOLTA_HOME",
+    "RUSTUP_HOME",
+    "CARGO_HOME",
+];
+
 /// Build a minimal deterministic environment for external probes.
 pub fn minimal_probe_environment(executable: &str, user_service: bool) -> Vec<(String, String)> {
+    probe_environment_from(executable, user_service, |name| {
+        use std::os::unix::ffi::OsStrExt;
+        std::env::var_os(name)
+            .filter(|value| !value.is_empty())
+            .map(|value| crate::pycompat::fsdecode(value.as_bytes()))
+    })
+}
+
+/// [`minimal_probe_environment`] with an injectable variable lookup.
+pub fn probe_environment_from(
+    executable: &str,
+    user_service: bool,
+    getenv: impl Fn(&str) -> Option<String>,
+) -> Vec<(String, String)> {
     let mut path_entries: Vec<String> = vec![pathlib_parent(executable)];
     for entry in DEFPATH.split(':') {
         if !path_entries.iter().any(|e| e == entry) {
@@ -97,16 +134,15 @@ pub fn minimal_probe_environment(executable: &str, user_service: bool) -> Vec<(S
         ("LC_ALL".to_string(), "C".to_string()),
         ("PATH".to_string(), path_entries.join(":")),
     ];
+    for &name in PROBE_LOCATOR_VARS {
+        if let Some(value) = getenv(name).filter(|v| v.starts_with('/')) {
+            env.push((name.to_string(), value));
+        }
+    }
     if user_service {
         for name in ["DBUS_SESSION_BUS_ADDRESS", "XDG_RUNTIME_DIR"] {
-            if let Some(value) = std::env::var_os(name)
-                && !value.is_empty()
-            {
-                use std::os::unix::ffi::OsStrExt;
-                env.push((
-                    name.to_string(),
-                    crate::pycompat::fsdecode(value.as_bytes()),
-                ));
+            if let Some(value) = getenv(name) {
+                env.push((name.to_string(), value));
             }
         }
     }
@@ -122,68 +158,50 @@ fn terminate_process(pid: u32) {
     }
 }
 
-/// `BufferedReader.read(4096)`: block until the chunk is full or EOF.
-fn read_chunk(stream: &mut impl Read, buf: &mut [u8]) -> std::io::Result<usize> {
-    let mut filled = 0;
-    while filled < buf.len() {
-        match stream.read(&mut buf[filled..]) {
-            Ok(0) => break,
-            Ok(n) => filled += n,
-            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
-            Err(e) => {
-                if filled == 0 {
-                    return Err(e);
-                }
-                break;
-            }
-        }
-    }
-    Ok(filled)
+/// One captured output pipe.
+struct Capture {
+    pipe: Option<File>,
+    data: Vec<u8>,
 }
 
-fn spawn_reader(
-    mut stream: impl Read + Send + 'static,
-    target: Arc<Mutex<Vec<u8>>>,
-    truncated: Arc<AtomicBool>,
-    limit: usize,
-    pid: u32,
-) -> mpsc::Receiver<()> {
-    let (done_tx, done_rx) = mpsc::channel();
-    let body = move || {
-        let mut buf = [0u8; READ_CHUNK];
-        loop {
-            let n = match read_chunk(&mut stream, &mut buf) {
-                Ok(0) | Err(_) => break,
-                Ok(n) => n,
-            };
-            let mut data = target.lock().unwrap_or_else(|p| p.into_inner());
-            let remaining = limit.saturating_sub(data.len());
-            if remaining > 0 {
-                data.extend_from_slice(&buf[..n.min(remaining)]);
-            }
-            drop(data);
-            if n > remaining {
-                truncated.store(true, Ordering::SeqCst);
-                terminate_process(pid);
-                break;
-            }
+impl Capture {
+    fn new(pipe: Option<impl Into<OwnedFd>>) -> Self {
+        Capture {
+            pipe: pipe.map(|p| File::from(p.into())),
+            data: Vec::new(),
         }
-        let _ = done_tx.send(());
-    };
-    if thread::Builder::new()
-        .stack_size(HELPER_STACK)
-        .spawn(body)
-        .is_err()
-    {
-        // Could not start a reader: report it as already finished.
-        let (tx, rx) = mpsc::channel();
-        let _ = tx.send(());
-        return rx;
     }
-    done_rx
+
+    /// Read what is available; returns `true` when the cap was exceeded.
+    fn read_available(&mut self, limit: usize) -> bool {
+        let Some(pipe) = self.pipe.as_mut() else {
+            return false;
+        };
+        let mut buf = [0u8; READ_CHUNK];
+        match pipe.read(&mut buf) {
+            Ok(0) => self.pipe = None,
+            Ok(n) => {
+                let remaining = limit.saturating_sub(self.data.len());
+                self.data.extend_from_slice(&buf[..n.min(remaining)]);
+                if n > remaining {
+                    self.pipe = None;
+                    return true;
+                }
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(_) => self.pipe = None,
+        }
+        false
+    }
 }
 
 /// Run a command with bounded time/output and process-group cleanup.
+///
+/// The probe's stdin is `/dev/null`. Both output pipes and (on Linux) a
+/// pidfd for the child are multiplexed with `poll(2)` on the calling thread,
+/// so a probe costs no helper threads. The timeout covers the probe until it
+/// exits; afterwards the pipes get a short grace period (for descendants that
+/// still hold them) before the process group is killed.
 ///
 /// `Err` mirrors the Python `ValueError`s for invalid arguments; `Ok(None)`
 /// means the command could not be started or timed out.
@@ -209,81 +227,104 @@ pub fn run_command(
         .args(cmd[1..].iter().map(|a| os(a)))
         .env_clear()
         .envs(env.iter().map(|(k, v)| (os(k), os(v))))
-        .stdin(Stdio::inherit())
+        .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
-    sys::exec_in_new_session(&mut command, Arc::new(spec));
+    sys::exec_in_new_session(&mut command, spec);
     let mut child = match command.spawn() {
         Ok(child) => child,
         Err(_) => return Ok(None),
     };
     let pid = child.id();
-    let stdout = Arc::new(Mutex::new(Vec::new()));
-    let stderr = Arc::new(Mutex::new(Vec::new()));
-    let truncated = Arc::new(AtomicBool::new(false));
-    let mut readers = Vec::with_capacity(2);
-    if let Some(out) = child.stdout.take() {
-        readers.push(spawn_reader(
-            out,
-            stdout.clone(),
-            truncated.clone(),
-            limit,
-            pid,
-        ));
-    }
-    if let Some(err) = child.stderr.take() {
-        readers.push(spawn_reader(
-            err,
-            stderr.clone(),
-            truncated.clone(),
-            limit,
-            pid,
-        ));
+    let deadline = Instant::now() + Duration::from_secs_f64(timeout);
+    let pidfd = sys::pidfd_open(pid);
+    let mut streams = [
+        Capture::new(child.stdout.take()),
+        Capture::new(child.stderr.take()),
+    ];
+    let mut truncated = false;
+    let mut status = None;
+    // Grace deadline for open pipes after exit, and whether the group was
+    // already killed because of them.
+    let mut drain: Option<(Instant, bool)> = None;
+
+    loop {
+        if status.is_none() {
+            match child.try_wait() {
+                Ok(Some(exit)) => {
+                    status = Some(exit);
+                    drain = Some((Instant::now() + READER_JOIN, false));
+                }
+                Ok(None) => {}
+                Err(_) => {
+                    terminate_process(pid);
+                    let _ = child.wait();
+                    return Ok(None);
+                }
+            }
+        }
+        let open = streams.iter().any(|s| s.pipe.is_some());
+        if status.is_some() && !open {
+            break;
+        }
+        let now = Instant::now();
+        let wake = match drain {
+            None if now >= deadline => {
+                terminate_process(pid);
+                let _ = child.wait();
+                return Ok(None);
+            }
+            None => deadline,
+            Some((until, killed)) if now >= until => {
+                if killed {
+                    break;
+                }
+                // Descendants still hold the pipes: kill the group and
+                // give the pipes one more grace period to report EOF.
+                terminate_process(pid);
+                drain = Some((now + READER_JOIN, true));
+                continue;
+            }
+            Some((until, _)) => until,
+        };
+
+        let mut fds: Vec<libc::pollfd> = Vec::with_capacity(3);
+        let mut owners: Vec<usize> = Vec::with_capacity(2);
+        for (i, stream) in streams.iter().enumerate() {
+            if let Some(pipe) = &stream.pipe {
+                fds.push(sys::pollfd(pipe.as_raw_fd()));
+                owners.push(i);
+            }
+        }
+        let mut wait_ms = wake.saturating_duration_since(now).as_millis() + 1;
+        match (&pidfd, status.is_none()) {
+            (Some(fd), true) => fds.push(sys::pollfd(fd.as_raw_fd())),
+            // No pidfd: notice the exit with short sleeps.
+            (None, true) => wait_ms = wait_ms.min(EXIT_POLL_MS),
+            _ => {}
+        }
+        sys::poll(&mut fds, wait_ms.min(i32::MAX as u128) as i32);
+        for (fd, &i) in fds.iter().zip(&owners) {
+            if fd.revents != 0 && streams[i].read_available(limit) {
+                truncated = true;
+                terminate_process(pid);
+            }
+        }
     }
 
-    let (wait_tx, wait_rx) = mpsc::channel();
-    let waiter = thread::Builder::new()
-        .stack_size(HELPER_STACK)
-        .spawn(move || {
-            let _ = wait_tx.send(child.wait());
-        });
-    if waiter.is_err() {
-        terminate_process(pid);
+    let Some(status) = status else {
         return Ok(None);
-    }
-
-    let status = match wait_rx.recv_timeout(Duration::from_secs_f64(timeout)) {
-        Ok(Ok(status)) => status,
-        Ok(Err(_)) | Err(RecvTimeoutError::Disconnected) => return Ok(None),
-        Err(RecvTimeoutError::Timeout) => {
-            terminate_process(pid);
-            let _ = wait_rx.recv();
-            return Ok(None);
-        }
     };
-
-    let stuck: Vec<&mpsc::Receiver<()>> = readers
-        .iter()
-        .filter(|rx| rx.recv_timeout(READER_JOIN).is_err())
-        .collect();
-    if !stuck.is_empty() {
-        terminate_process(pid);
-        for rx in stuck {
-            let _ = rx.recv_timeout(READER_JOIN);
-        }
-    }
-
-    use std::os::unix::process::ExitStatusExt;
     let returncode = status
         .code()
         .unwrap_or_else(|| -status.signal().unwrap_or(0));
-    let take = |buf: &Arc<Mutex<Vec<u8>>>| buf.lock().unwrap_or_else(|p| p.into_inner()).clone();
+    let [stdout, stderr] = streams;
     Ok(Some(CommandResult {
         args: cmd.to_vec(),
         returncode,
-        stdout: take(&stdout),
-        stderr: take(&stderr),
-        output_truncated: truncated.load(Ordering::SeqCst),
+        stdout: stdout.data,
+        stderr: stderr.data,
+        output_truncated: truncated,
     }))
 }
 
@@ -322,7 +363,7 @@ mod tests {
         let mut checked = 0;
         for (name, _) in std::env::vars_os() {
             let name = name.to_string_lossy();
-            if shell_own.contains(&name.as_ref()) {
+            if shell_own.contains(&name.as_ref()) || PROBE_LOCATOR_VARS.contains(&name.as_ref()) {
                 continue;
             }
             checked += 1;
@@ -400,7 +441,8 @@ mod tests {
 
     #[test]
     fn minimal_environment_shape() {
-        let env = minimal_probe_environment("/usr/bin/git", false);
+        let none = |_: &str| None;
+        let env = probe_environment_from("/usr/bin/git", false, none);
         assert_eq!(
             env,
             vec![
@@ -410,12 +452,93 @@ mod tests {
             ]
         );
         assert_eq!(
-            minimal_probe_environment("/bin/sh", false)[2].1,
+            probe_environment_from("/bin/sh", false, none)[2].1,
             "/bin:/usr/bin"
         );
         assert_eq!(
-            minimal_probe_environment("/x", false)[2].1,
+            probe_environment_from("/x", false, none)[2].1,
             "/:/bin:/usr/bin"
         );
+    }
+
+    #[test]
+    fn probe_environment_passes_absolute_locators_only() {
+        let lookup = |name: &str| match name {
+            "HOME" => Some("/home/dev".to_string()),
+            "MISE_DATA_DIR" => Some("/opt/mise".to_string()),
+            "PYENV_ROOT" => Some("relative/pyenv".to_string()),
+            "XDG_RUNTIME_DIR" => Some("/run/user/1000".to_string()),
+            "GITHUB_TOKEN" | "LD_PRELOAD" | "NODE_OPTIONS" => Some("/secret".to_string()),
+            _ => None,
+        };
+        let env = probe_environment_from("/usr/bin/git", false, lookup);
+        let names: Vec<&str> = env.iter().map(|(k, _)| k.as_str()).collect();
+        assert_eq!(names, ["LANG", "LC_ALL", "PATH", "HOME", "MISE_DATA_DIR"]);
+        assert_eq!(env[3].1, "/home/dev");
+        let user = probe_environment_from("/usr/bin/systemctl", true, lookup);
+        assert_eq!(user.last().unwrap().0, "XDG_RUNTIME_DIR");
+    }
+
+    #[test]
+    fn probe_stdin_is_dev_null() {
+        let result = run_command(
+            &sh("readlink /proc/$$/fd/0; read line; echo \"read=$?\""),
+            None,
+            5.0,
+            1024,
+        )
+        .unwrap()
+        .unwrap();
+        let text = result.stdout_text();
+        if std::path::Path::new("/proc/self/fd/0").exists() {
+            assert!(text.starts_with("/dev/null\n"), "{text}");
+        }
+        assert!(text.ends_with("read=1\n"), "{text}");
+    }
+
+    #[test]
+    fn descendant_holding_pipes_does_not_hang_the_probe() {
+        let started = std::time::Instant::now();
+        let result = run_command(&sh("sleep 30 & echo tool 1.2.3"), None, 10.0, 1024)
+            .unwrap()
+            .unwrap();
+        assert_eq!(result.stdout_text(), "tool 1.2.3\n");
+        assert_eq!(result.returncode, 0);
+        assert!(
+            started.elapsed() < Duration::from_secs(3),
+            "{:?}",
+            started.elapsed()
+        );
+    }
+
+    #[test]
+    fn both_streams_are_captured_and_signals_reported() {
+        let result = run_command(
+            &sh("echo out; echo err >&2; i=0; while [ $i -lt 50 ]; do printf '%0100d' 0 >&2; i=$((i+1)); done; sleep 5; echo done"),
+            None,
+            5.0,
+            1024,
+        )
+        .unwrap()
+        .unwrap();
+        // stderr overflows its 1 KiB cap: the group is killed, stdout keeps
+        // what it had, and the result is marked truncated.
+        assert!(result.output_truncated);
+        assert_eq!(result.stdout_text(), "out\n");
+        assert_eq!(result.stderr.len(), 1024);
+        assert!(result.stderr_text().starts_with("err\n"));
+        // Killed by the group SIGKILL, or by SIGPIPE if its next write to
+        // the closed stderr pipe comes first.
+        assert!(
+            [-libc::SIGKILL, -libc::SIGPIPE].contains(&result.returncode),
+            "{}",
+            result.returncode
+        );
+
+        let killed = run_command(&sh("echo partial; kill -TERM $$"), None, 5.0, 1024)
+            .unwrap()
+            .unwrap();
+        assert_eq!(killed.returncode, -libc::SIGTERM);
+        assert_eq!(killed.stdout_text(), "partial\n");
     }
 }

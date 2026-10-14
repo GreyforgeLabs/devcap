@@ -509,8 +509,18 @@ pub fn scan_tool(
     include_vendored: bool,
     timeout: f64,
 ) -> Result<ToolResult, String> {
+    scan_tool_in(&LookupEnv::current(), tool, include_vendored, timeout)
+}
+
+/// [`scan_tool`] against an already captured lookup environment.
+fn scan_tool_in(
+    lookup: &LookupEnv,
+    tool: &ToolDef,
+    include_vendored: bool,
+    timeout: f64,
+) -> Result<ToolResult, String> {
     let timeout = validate_timeout(timeout)?;
-    let Some(path) = find_binary(tool, include_vendored) else {
+    let Some(path) = lookup.find_binary(tool, include_vendored) else {
         return Ok(ToolResult::missing(tool));
     };
     let probe = get_version(tool, &path, timeout);
@@ -650,9 +660,13 @@ pub fn scan_tools(
         .map(Job::Tool)
         .chain(services.iter().map(|(n, u)| Job::Service(n, *u)))
         .collect();
+    // PATH and the working directory are captured once for the whole scan.
+    let lookup = LookupEnv::current();
     let run = |job: &Job| -> Result<Outcome, String> {
         match job {
-            Job::Tool(tool) => scan_tool(tool, include_vendored, timeout).map(Outcome::Tool),
+            Job::Tool(tool) => {
+                scan_tool_in(&lookup, tool, include_vendored, timeout).map(Outcome::Tool)
+            }
             Job::Service(name, user) => check_service(name, *user, timeout).map(Outcome::Service),
         }
     };

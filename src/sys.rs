@@ -5,6 +5,7 @@
 
 use std::ffi::CString;
 use std::io;
+use std::os::fd::{FromRawFd, OwnedFd, RawFd};
 use std::os::unix::ffi::OsStrExt;
 use std::path::Path;
 
@@ -96,6 +97,40 @@ fn access(path: &Path, mode: libc::c_int) -> bool {
     };
     // SAFETY: `c_path` is a valid NUL-terminated string for the call.
     unsafe { libc::access(c_path.as_ptr(), mode) == 0 }
+}
+
+/// A `pollfd` waiting for input (or hang-up) on `fd`.
+pub fn pollfd(fd: RawFd) -> libc::pollfd {
+    libc::pollfd {
+        fd,
+        events: libc::POLLIN,
+        revents: 0,
+    }
+}
+
+/// `poll(2)`; errors (such as `EINTR`) are reported as no ready descriptors.
+pub fn poll(fds: &mut [libc::pollfd], timeout_ms: libc::c_int) {
+    // SAFETY: `fds` is a valid, writable array of `fds.len()` pollfd structs.
+    unsafe {
+        libc::poll(fds.as_mut_ptr(), fds.len() as libc::nfds_t, timeout_ms);
+    }
+}
+
+/// `pidfd_open(2)`: a descriptor that becomes readable when `pid` exits.
+/// `None` where unsupported (non-Linux, kernels before 5.3).
+pub fn pidfd_open(pid: u32) -> Option<OwnedFd> {
+    #[cfg(target_os = "linux")]
+    {
+        // SAFETY: pidfd_open takes a plain pid and flags. `pid` is our own
+        // unreaped child, so it cannot have been recycled.
+        let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid as libc::pid_t, 0) };
+        if fd >= 0 {
+            // SAFETY: the kernel returned a fresh descriptor we now own.
+            return Some(unsafe { OwnedFd::from_raw_fd(fd as RawFd) });
+        }
+    }
+    let _ = pid;
+    None
 }
 
 /// CPython's `OSError.strerror` text for an I/O error.
@@ -198,7 +233,7 @@ fn mark_inherited_cloexec(sweep_limit: libc::c_int) {
 /// `setsid()`, marks inherited descriptors close-on-exec, and then
 /// `execve()`s the absolute path directly (no `/bin/sh` fallback on ENOEXEC,
 /// which glibc's `execvp` would otherwise perform).
-pub fn exec_in_new_session(cmd: &mut std::process::Command, spec: std::sync::Arc<ExecSpec>) {
+pub fn exec_in_new_session(cmd: &mut std::process::Command, spec: ExecSpec) {
     use std::os::unix::process::CommandExt;
     // SAFETY: the closure runs in the forked child before exec. It only makes
     // async-signal-safe syscalls (setsid, close_range/fcntl, execve) on memory
@@ -206,6 +241,8 @@ pub fn exec_in_new_session(cmd: &mut std::process::Command, spec: std::sync::Arc
     // failure.
     unsafe {
         cmd.pre_exec(move || {
+            // Capture the whole (Send + Sync) spec, not its raw-pointer fields.
+            let spec = &spec;
             if libc::setsid() == -1 {
                 return Err(io::Error::last_os_error());
             }

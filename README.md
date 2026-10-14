@@ -121,6 +121,8 @@ Tools listed in the registry inherit their detection config automatically. Custo
 
 Custom profiles execute local binaries to collect versions. Treat profiles from third-party repositories like code, not passive data. By default, `devcap` rejects unknown keys, duplicate case-normalized tool names, interpreter-style custom commands, and vendored/project-local PATH entries such as `node_modules`, `.venv`, `venv`, `__pypackages__`, `.tox`, and `.nox`; use `--include-vendored` only when you trust the checkout being scanned. Profile reads are capped at 1 MB and parsed from the exact opened file handle.
 
+Version probes cannot read your terminal: stdin is `/dev/null`. They get `LANG=C`, a minimal `PATH`, and only non-secret locator variables such as `HOME`, the XDG base directories, and version-manager roots, so mise, asdf, pyenv, rbenv, nodenv, Volta, and rustup shims report the toolchain your shell would run. See [SECURITY.md](SECURITY.md) for the full list.
+
 ## Output Formats
 
 **Text** (default) — columnar, human-readable:

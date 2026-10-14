@@ -423,3 +423,107 @@ fn probes_do_not_inherit_callers_descriptors() {
         assert!(text.contains("\"raw_banner\": \"clean 1.0\\n\""), "{text}");
     }
 }
+
+fn write_tool(dir: &Path, name: &str, body: &str) {
+    let path = dir.join(name);
+    fs::write(&path, format!("#!/bin/sh\n{body}")).unwrap();
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).unwrap();
+}
+
+fn scan_single(dir: &Path, name: &str, home: Option<&str>) -> String {
+    let profile = dir.join("one.toml");
+    fs::write(&profile, format!("[[tools]]\nname = \"{name}\"\n")).unwrap();
+    let mut cmd = bin();
+    cmd.arg("scan")
+        .arg("--config")
+        .arg(&profile)
+        .args(["--format", "json"])
+        .env("PATH", dir)
+        .timeout(std::time::Duration::from_secs(60));
+    match home {
+        Some(home) => cmd.env("HOME", home),
+        None => cmd.env_remove("HOME"),
+    };
+    let output = cmd.output().unwrap();
+    assert_eq!(output.status.code(), Some(0));
+    String::from_utf8(output.stdout).unwrap()
+}
+
+#[test]
+fn version_manager_shims_see_home() {
+    // Like mise/asdf/pyenv shims: without HOME they print an error banner
+    // that would otherwise be reported as the tool's "version".
+    let tmp = TempDir::new().unwrap();
+    write_tool(
+        tmp.path(),
+        "shimmed-tool",
+        "if [ -z \"$HOME\" ]; then echo 'shim ERROR: HOME is not defined; shim 2026.9.1' >&2; exit 1; fi\n\
+         echo \"shimmed-tool 4.5.6 ($HOME)\"\n",
+    );
+    let text = scan_single(tmp.path(), "shimmed-tool", Some("/home/devcap-test"));
+    assert!(text.contains("\"version\": \"4.5.6\""), "{text}");
+    assert!(text.contains("(/home/devcap-test)"), "{text}");
+    // A relative HOME is not a locator path and is not passed on.
+    let text = scan_single(tmp.path(), "shimmed-tool", Some("relative/home"));
+    assert!(text.contains("\"version\": \"2026.9.1\""), "{text}");
+}
+
+#[test]
+fn probes_cannot_read_the_callers_stdin() {
+    let tmp = TempDir::new().unwrap();
+    // A tool that waits for input before answering would otherwise block
+    // until the probe timeout (or read the user's terminal).
+    write_tool(
+        tmp.path(),
+        "stdin-tool",
+        "if read line; then echo \"stdin-tool 6.6.6 got:$line\"; else echo 'stdin-tool 1.2.3'; fi\n",
+    );
+    let profile = tmp.path().join("one.toml");
+    fs::write(&profile, "[[tools]]\nname = \"stdin-tool\"\n").unwrap();
+    let output = bin()
+        .arg("scan")
+        .arg("--config")
+        .arg(&profile)
+        .args(["--format", "json", "--timeout", "10"])
+        .env("PATH", tmp.path())
+        .write_stdin("secret typed by the user\n")
+        .timeout(std::time::Duration::from_secs(60))
+        .output()
+        .unwrap();
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains("\"version\": \"1.2.3\""), "{text}");
+    assert!(!text.contains("secret"), "{text}");
+}
+
+#[test]
+fn registry_flags_match_real_cli_conventions() {
+    // tmux only accepts -V; kubectl 1.28+ rejects `version --short`.
+    let tmp = TempDir::new().unwrap();
+    write_tool(
+        tmp.path(),
+        "tmux",
+        "if [ \"$*\" = \"-V\" ]; then echo 'tmux 3.7c'; else echo 'tmux: unknown option -- -' >&2; exit 1; fi\n",
+    );
+    write_tool(
+        tmp.path(),
+        "kubectl",
+        "if [ \"$*\" = \"version --client\" ]; then printf 'Client Version: v1.31.0\\nKustomize Version: v5.4.2\\n'; \
+         else echo 'error: unknown flag: --short' >&2; exit 1; fi\n",
+    );
+    let text = scan_single(tmp.path(), "tmux", None);
+    // The version pattern keeps the numeric part; raw_banner keeps "3.7c".
+    assert!(text.contains("\"version\": \"3.7\""), "{text}");
+    assert!(text.contains("\"raw_banner\": \"tmux 3.7c\\n\""), "{text}");
+    let text = scan_single(tmp.path(), "kubectl", None);
+    assert!(text.contains("\"version\": \"1.31.0\""), "{text}");
+    // JDK 8 rejects `--version`; `-version` reports on stderr everywhere.
+    write_tool(
+        tmp.path(),
+        "java",
+        "if [ \"$*\" = \"-version\" ]; then echo 'java version \"1.8.0_402\"' >&2; \
+         else echo 'Unrecognized option: --version' >&2; exit 1; fi\n",
+    );
+    let text = scan_single(tmp.path(), "java", None);
+    assert!(text.contains("\"version\": \"1.8.0\""), "{text}");
+    assert!(text.contains("\"source_stream\": \"stderr\""), "{text}");
+}

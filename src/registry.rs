@@ -156,7 +156,10 @@ fn registry_tools() -> Vec<ToolDef> {
         t("bun", LANGUAGES),
         t("rustc", LANGUAGES),
         t("go", LANGUAGES).with_version_flag("version"),
-        t("java", LANGUAGES).with_version_source("stderr"),
+        // `-version` (to stderr) works on every JDK; `--version` needs JDK 9+.
+        t("java", LANGUAGES)
+            .with_version_flag("-version")
+            .with_version_source("stderr"),
         t("ruby", LANGUAGES),
         t("php", LANGUAGES),
         t("perl", LANGUAGES).with_version_source("stderr"),
@@ -194,7 +197,8 @@ fn registry_tools() -> Vec<ToolDef> {
         t("docker", CONTAINERS),
         t("docker-compose", CONTAINERS).with_version_flag("version"),
         t("podman", CONTAINERS),
-        t("kubectl", CONTAINERS).with_version_flag("version --client --short"),
+        // `--short` was removed in kubectl 1.28; `version --client` works on all releases.
+        t("kubectl", CONTAINERS).with_version_flag("version --client"),
         t("helm", CONTAINERS).with_version_flag("version --short"),
         t("terraform", CONTAINERS),
         t("ansible", CONTAINERS),
@@ -270,7 +274,7 @@ fn registry_tools() -> Vec<ToolDef> {
         t("aider", AI_TOOLS),
         t("claude", AI_TOOLS),
         // --- Miscellaneous ---
-        t("tmux", MISC),
+        t("tmux", MISC).with_version_flag("-V"),
         t("direnv", MISC),
         t("hyperfine", MISC),
     ]
@@ -368,6 +372,12 @@ mod tests {
     fn test_version_flag_overrides() {
         assert_eq!(get_tool("go").unwrap().version_flag, "version");
         assert_eq!(get_tool("java").unwrap().version_source, "stderr");
+        assert_eq!(get_tool("java").unwrap().version_flag, "-version");
+        assert_eq!(get_tool("tmux").unwrap().version_flag, "-V");
+        assert_eq!(
+            get_tool("kubectl").unwrap().version_flag,
+            "version --client"
+        );
     }
 
     #[test]

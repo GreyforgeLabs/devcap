@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-14
+
+### Fixed
+
+- Version-manager shims now report the real tool version. Probes receive `HOME`, the XDG base directories, and version-manager roots (`ASDF_DIR`, `ASDF_DATA_DIR`, `MISE_DATA_DIR`, `MISE_CONFIG_DIR`, `PYENV_ROOT`, `RBENV_ROOT`, `NODENV_ROOT`, `VOLTA_HOME`, `RUSTUP_HOME`, `CARGO_HOME`) when these hold absolute paths. mise, asdf, pyenv, rbenv, and similar shims need them to resolve a toolchain; before, a shim's own error banner could be reported as the tool's version. All other variables are still withheld from probes.
+- Probes read stdin from `/dev/null`. A tool that waits for input now answers at once instead of reading the caller's terminal or piped input or waiting for the probe timeout.
+- `tmux` is probed with `-V` (tmux has no `--version`).
+- `kubectl` is probed with `version --client`; kubectl 1.28 removed the `--short` flag.
+- `java` is probed with `-version`, which every JDK supports (JDK 8 rejects `--version`).
+
+### Changed
+
+- The probe runner multiplexes both output pipes and a Linux pidfd with `poll(2)` on the worker thread, replacing three helper threads per probe. Timeouts, the 64 KiB output cap, the 250 ms post-exit grace for descendants that hold the pipes, and process-group cleanup work as before. A full scan on greyarch starts 16 threads instead of 172. For 100 fast probes, wall time drops from 125.3 ms to 79.2 ms and devcap's own CPU time from 135.7 ms to 62.4 ms. The stripped binary is 707,472 B, down from 750,944 B. See `docs/benchmarks.md`.
+- A scan captures `PATH` and the working directory once rather than once per tool.
+
 ## [0.3.0] - 2026-10-05
 
 ### Changed

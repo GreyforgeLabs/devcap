@@ -90,3 +90,37 @@ results:
 The Rust binary is larger than the Python sources on their own. Unlike the
 Python package, it needs no interpreter. It also bundles the Unicode property
 tables that make version parsing and text cleanup match CPython exactly.
+
+## 0.3.1 probe runner (2026-10-14)
+
+Measured on `greyarch` (Linux 7.2.5 x86_64, 12 cores, load average 16 to 20
+from unrelated jobs) with Rust 1.98.1 and the same release profile. Both
+binaries ran interleaved (A, B, A, B, ...) inside
+`systemd-run --user --scope -p MemoryMax=3G -p CPUQuota=300% nice -n 10`.
+A small C wrapper forked, exec'd and timed each run. It polled the target's
+`VmHWM` and read devcap's own `utime + stime` from `/proc/<pid>/stat` while
+the exited process was still a zombie (`waitid(WNOWAIT)`), so probe children
+are excluded. Wall time and `VmHWM` are medians; own CPU is a mean, because
+the kernel reports it in 10 ms ticks. Thread and `execve` counts come from a
+ptrace wrapper that follows the whole process tree.
+
+| Command | Runs | 0.3.0 wall | 0.3.1 wall | 0.3.0 own CPU | 0.3.1 own CPU | 0.3.0 own `VmHWM` | 0.3.1 own `VmHWM` |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 100 fast probes (`true --version`), 16 workers | 21 | 125.3 ms | 79.2 ms | 135.7 ms | 62.4 ms | 4.35 MiB | 3.83 MiB |
+| 100 fast probes, `--no-parallel` | 21 | 157.5 ms | 133.8 ms | 59.5 ms | 30.5 ms | 3.38 MiB | 3.13 MiB |
+| `devcap --help` | 21 | 2.5 ms | 2.1 ms | — | — | 2.14 MiB | 1.96 MiB |
+| `scan` of 100 tools not on `PATH` (lookup only) | 21 | 12.6 ms | 10.1 ms | — | — | 3.40 MiB | 3.33 MiB |
+| `scan --profile python-dev --format json` | 15 | 33.1 ms | 31.6 ms | — | — | 3.39 MiB | 3.23 MiB |
+| `scan --format json` (full, `HOME` unset so both run identical probes) | 11 | 1251.3 ms | 1311.8 ms | 68.2 ms | 38.2 ms | 4.41 MiB | 3.75 MiB |
+
+Threads started by devcap during a full scan: 172 in 0.3.0 (16 workers plus
+three helpers for each of 52 probes), 16 in 0.3.1. A full-scan wall time is
+still set by the slowest probe (`pnpm --version`, 0.6 to 0.85 s here), so the
+two full-scan medians fall within this host's run-to-run noise. On this host,
+three `~/.local/bin` wrappers run `mise`, which needs `HOME`. With `HOME`
+passed through, they report their real versions (`gh` 2.101.0 and
+`claude` 2.1.294, instead of mise's own 2026.9.14) after doing their actual
+work. That adds 8 `execve` calls (61 to 69), and the full-scan median with
+`HOME` set rose from 1068.8 ms to 1258.5 ms.
+
+The stripped release binary is 707,472 B (0.3.0: 750,944 B).
