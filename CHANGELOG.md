@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Fixed
 
 - Binaries reached through a relative PATH entry (`.`, an empty entry such as a leading or trailing `:`, or a relative directory such as `bin`) are treated as project-local and skipped unless `--include-vendored` is set. Before, they were skipped only when the working directory held a project marker, so running devcap in any other directory with such an entry executed a binary planted there. A file that is also reachable through an absolute PATH entry is still found.
-- `--redact` also removes paths from version text. A failing probe reports its first error line as the version, and that line usually names the executable (`/path/to/tool: 2: exec: ...: not found`), so the redacted path appeared there in JSON, text, and Markdown output. Absolute and `~/` paths in the version string are now replaced with `[redacted]`; version numbers are unchanged.
+- `--redact` also removes paths from version text. A failing probe reports its first error line as the version, and that line usually names the executable (`/path/to/tool: 2: exec: ...: not found`), so the redacted path appeared there in JSON, text, and Markdown output. Absolute, `~/` and `file:///` paths in the version string, including paths quoted with backticks or typographic quotes, are now replaced with `[redacted]`; version numbers and `http(s)://` URLs are unchanged.
 
 ## [0.3.1] - 2026-10-14
 

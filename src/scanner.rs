@@ -155,15 +155,25 @@ impl ScanResult {
     }
 }
 
-/// `text` with every absolute (`/...`) or home-relative (`~/...`) path
-/// replaced by `[redacted]`. A path starts at the beginning of the text or
-/// after whitespace or one of `([<'"=:,`, and ends before whitespace or one
-/// of `)]>'":,;`. A version number never contains such a path; a failing
-/// probe's error line, reported as its version, often names the executable.
+/// `text` with every absolute (`/...`), home-relative (`~/...`) or
+/// `file:///...` path replaced by `[redacted]`. A path starts at the
+/// beginning of the text or after whitespace or one of ``([{<'"`=:,@|``
+/// or the quotes `‘“«`, and ends before whitespace or one of
+/// ``)]}>'"`:,;|`` or `’”»`. A version number never contains such a path;
+/// a failing probe's error line, reported as its version, often names the
+/// executable.
 fn redact_paths_in(text: &str) -> String {
-    let opens = |c: char| c.is_whitespace() || "([<'\"=:,".contains(c);
-    let closes = |c: char| c.is_whitespace() || ")]>'\":,;".contains(c);
+    let opens = |c: char| c.is_whitespace() || "([{<'\"`=:,@|‘“«".contains(c);
+    let closes = |c: char| c.is_whitespace() || ")]}>'\"`:,;|’”»".contains(c);
     let chars: Vec<char> = text.chars().collect();
+    let is_file_url = |i: usize| {
+        let scheme: Vec<char> = "file:///".chars().collect();
+        chars.len() >= i + scheme.len()
+            && chars[i..i + scheme.len()]
+                .iter()
+                .zip(&scheme)
+                .all(|(c, s)| c.eq_ignore_ascii_case(s))
+    };
     let mut out = String::with_capacity(text.len());
     let mut i = 0;
     while i < chars.len() {
@@ -171,6 +181,7 @@ fn redact_paths_in(text: &str) -> String {
         let body = match chars[i] {
             '/' => i + 1,
             '~' if chars.get(i + 1) == Some(&'/') => i + 2,
+            'f' | 'F' if is_file_url(i) => i + 8,
             _ => usize::MAX,
         };
         if at_start && chars.get(body).is_some_and(|&c| c != '/' && !closes(c)) {
@@ -1248,6 +1259,22 @@ mod tests {
                 "error=~/bin/x,(/usr/lib/y)",
                 "error=[redacted],([redacted])",
             ),
+            // Node.js prints an ES module's location as a file URL.
+            ("file:///home/user/.npm/lib/cli.mjs:5", "[redacted]:5"),
+            (
+                "at FILE:///srv/x.mjs and https://example.com/a/b",
+                "at [redacted] and https://example.com/a/b",
+            ),
+            ("profile:file://x", "profile:file://x"),
+            (
+                "could not find `Cargo.toml` in `/home/user/work`",
+                "could not find `Cargo.toml` in `[redacted]`",
+            ),
+            (
+                "cannot open ‘/srv/a’ or “~/b” {/etc/c} @/opt/d|/opt/e",
+                "cannot open ‘[redacted]’ or “[redacted]” {[redacted]} @[redacted]|[redacted]",
+            ),
+            ("C/C++ a+/b x{y}/z", "C/C++ a+/b x{y}/z"),
             // Truncated at 80 characters: the cut path is still removed.
             (
                 "/home/user/projects/a-very-long-directory-name/sub/scratc...",

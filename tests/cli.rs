@@ -594,3 +594,46 @@ fn redact_removes_paths_from_error_text_reported_as_a_version() {
         assert!(!text.contains("/nonexistent-devcap"), "{format}: {text}");
     }
 }
+
+#[test]
+fn redact_removes_file_urls_and_quoted_paths_from_version_text() {
+    let tmp = TempDir::new().unwrap();
+    let dir = fs::canonicalize(tmp.path()).unwrap();
+    let shown = dir.join("lib");
+    // Node.js reports a crashing ES module as a file URL; Rust and Go tools
+    // often quote paths with backticks.
+    for (name, line) in [
+        ("esm-tool", format!("file://{}/cli.mjs:5", shown.display())),
+        (
+            "tick-tool",
+            format!("error: no `Cargo.toml` in `{}`", shown.display()),
+        ),
+    ] {
+        write_tool(
+            &dir,
+            name,
+            &format!("printf '%s\\n' '{line}' >&2\nexit 1\n"),
+        );
+    }
+    let profile = dir.join("two.toml");
+    fs::write(
+        &profile,
+        "[[tools]]\nname = \"esm-tool\"\n\n[[tools]]\nname = \"tick-tool\"\n",
+    )
+    .unwrap();
+    for format in ["json", "text", "markdown"] {
+        let output = bin()
+            .arg("scan")
+            .arg("--config")
+            .arg(&profile)
+            .args(["--format", format, "--redact"])
+            .env("PATH", &dir)
+            .timeout(std::time::Duration::from_secs(60))
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(0));
+        let text = String::from_utf8(output.stdout).unwrap();
+        assert!(text.contains("[redacted]"), "{format}: {text}");
+        assert!(!text.contains(dir.to_str().unwrap()), "{format}: {text}");
+    }
+}
