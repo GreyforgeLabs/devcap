@@ -155,7 +155,41 @@ impl ScanResult {
     }
 }
 
-/// Return a copy with sensitive local metadata replaced.
+/// `text` with every absolute (`/...`) or home-relative (`~/...`) path
+/// replaced by `[redacted]`. A path starts at the beginning of the text or
+/// after whitespace or one of `([<'"=:,`, and ends before whitespace or one
+/// of `)]>'":,;`. A version number never contains such a path; a failing
+/// probe's error line, reported as its version, often names the executable.
+fn redact_paths_in(text: &str) -> String {
+    let opens = |c: char| c.is_whitespace() || "([<'\"=:,".contains(c);
+    let closes = |c: char| c.is_whitespace() || ")]>'\":,;".contains(c);
+    let chars: Vec<char> = text.chars().collect();
+    let mut out = String::with_capacity(text.len());
+    let mut i = 0;
+    while i < chars.len() {
+        let at_start = i == 0 || opens(chars[i - 1]);
+        let body = match chars[i] {
+            '/' => i + 1,
+            '~' if chars.get(i + 1) == Some(&'/') => i + 2,
+            _ => usize::MAX,
+        };
+        if at_start && chars.get(body).is_some_and(|&c| c != '/' && !closes(c)) {
+            let mut end = body;
+            while end < chars.len() && !closes(chars[end]) {
+                end += 1;
+            }
+            out.push_str("[redacted]");
+            i = end;
+        } else {
+            out.push(chars[i]);
+            i += 1;
+        }
+    }
+    out
+}
+
+/// Return a copy with sensitive local metadata replaced. Redacting paths
+/// also removes paths from version text (see [`redact_paths_in`]).
 pub fn redact_scan(scan: &ScanResult, hostname: bool, paths: bool) -> ScanResult {
     let redacted = || Some("[redacted]".to_string());
     let results = scan
@@ -166,6 +200,11 @@ pub fn redact_scan(scan: &ScanResult, hostname: bool, paths: bool) -> ScanResult
                 redacted()
             } else {
                 r.path.clone()
+            },
+            version: if paths {
+                r.version.as_deref().map(redact_paths_in)
+            } else {
+                r.version.clone()
             },
             version_banner: if r.version_banner.as_deref().is_some_and(|b| !b.is_empty()) {
                 redacted()
@@ -1168,6 +1207,55 @@ mod tests {
         let redacted = redact_scan(&scan, true, true);
         assert_eq!(redacted.hostname, "[redacted]");
         assert_eq!(redacted.results[0].path.as_deref(), Some("[redacted]"));
+        assert_eq!(redacted.results[0].version.as_deref(), Some("3.12.3"));
+    }
+
+    #[test]
+    fn redacting_paths_covers_error_text_reported_as_a_version() {
+        let scan = ScanResult {
+            results: vec![ToolResult {
+                found: true,
+                version: Some(
+                    "/home/user/.local/bin/tool: 2: exec: /opt/real/tool: not found".into(),
+                ),
+                path: Some("/home/user/.local/bin/tool".into()),
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+        assert_eq!(
+            redact_scan(&scan, true, true).results[0].version.as_deref(),
+            Some("[redacted]: 2: exec: [redacted]: not found")
+        );
+        // Hostname-only redaction leaves version text alone.
+        assert_eq!(
+            redact_scan(&scan, true, false).results[0].version,
+            scan.results[0].version
+        );
+        for (text, expected) in [
+            ("3.12.3", "3.12.3"),
+            ("go1.22.0-X:loopvar", "go1.22.0-X:loopvar"),
+            (
+                "OpenBSD netcat (Debian patchlevel 1.238-1)",
+                "OpenBSD netcat (Debian patchlevel 1.238-1)",
+            ),
+            ("TCP/IP 1/2 a / b //", "TCP/IP 1/2 a / b //"),
+            (
+                "can't open '/srv/x/tool.py': [Errno 2]",
+                "can't open '[redacted]': [Errno 2]",
+            ),
+            (
+                "error=~/bin/x,(/usr/lib/y)",
+                "error=[redacted],([redacted])",
+            ),
+            // Truncated at 80 characters: the cut path is still removed.
+            (
+                "/home/user/projects/a-very-long-directory-name/sub/scratc...",
+                "[redacted]",
+            ),
+        ] {
+            assert_eq!(redact_paths_in(text), expected, "{text}");
+        }
     }
 
     #[test]

@@ -30,7 +30,7 @@ Instead, use one of these methods:
 
 Each probe runs in its own session with stdin at `/dev/null`, `LANG=C`/`LC_ALL=C`, a minimal `PATH`, and no other inherited variables except non-secret locator paths: `HOME`, the XDG base directories, and version-manager roots (`ASDF_DIR`, `ASDF_DATA_DIR`, `MISE_DATA_DIR`, `MISE_CONFIG_DIR`, `PYENV_ROOT`, `RBENV_ROOT`, `NODENV_ROOT`, `VOLTA_HOME`, `RUSTUP_HOME`, `CARGO_HOME`), passed only when they hold an absolute path. Tokens, `LD_*`, and interpreter option variables never reach a probe.
 
-Inventory output may include hostnames, OS details, executable paths, tool versions, and service state. Use `--redact` to suppress hostname and executable paths, then review JSON, text, and Markdown output before publishing it or uploading it as a public artifact.
+Inventory output may include hostnames, OS details, executable paths, tool versions, and service state. Use `--redact` to suppress the hostname, executable paths, raw version banners, and paths inside version text (a failing probe reports its first error line, which often names the executable), then review JSON, text, and Markdown output before publishing it or uploading it as a public artifact.
 
 ## Response Timeline
 

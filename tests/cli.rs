@@ -565,3 +565,32 @@ fn relative_path_entries_are_not_trusted_outside_projects() {
     let text = scan(&["--include-vendored"]);
     assert!(text.contains("\"version\": \"6.6.6\""), "{text}");
 }
+
+#[test]
+fn redact_removes_paths_from_error_text_reported_as_a_version() {
+    let tmp = TempDir::new().unwrap();
+    write_tool(
+        tmp.path(),
+        "broken-tool",
+        "exec /nonexistent-devcap/real-tool \"$@\"\n",
+    );
+    let profile = tmp.path().join("one.toml");
+    fs::write(&profile, "[[tools]]\nname = \"broken-tool\"\n").unwrap();
+    let dir = fs::canonicalize(tmp.path()).unwrap();
+    for format in ["json", "text", "markdown"] {
+        let output = bin()
+            .arg("scan")
+            .arg("--config")
+            .arg(&profile)
+            .args(["--format", format, "--redact"])
+            .env("PATH", tmp.path())
+            .timeout(std::time::Duration::from_secs(60))
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(0));
+        let text = String::from_utf8(output.stdout).unwrap();
+        assert!(text.contains("[redacted]"), "{format}: {text}");
+        assert!(!text.contains(dir.to_str().unwrap()), "{format}: {text}");
+        assert!(!text.contains("/nonexistent-devcap"), "{format}: {text}");
+    }
+}

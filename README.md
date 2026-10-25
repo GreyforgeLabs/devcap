@@ -155,7 +155,7 @@ Version probes cannot read your terminal: stdin is `/dev/null`. They get `LANG=C
 }
 ```
 
-**Markdown** — tables for documentation or READMEs. Terminal control sequences and Markdown table delimiters from tool output are sanitized before display, but environment inventory can still reveal hostnames, paths, installed tools, and service status. JSON includes the bounded source stream/banner used for version detection. Use `--redact` to replace the hostname, executable paths, and raw version banners before publishing output.
+**Markdown** — tables for documentation or READMEs. Terminal control sequences and Markdown table delimiters from tool output are sanitized before display, but environment inventory can still reveal hostnames, paths, installed tools, and service status. JSON includes the bounded source stream/banner used for version detection. Use `--redact` to replace the hostname, executable paths, raw version banners, and any path inside a version string (a failing probe reports its first error line as the version) before publishing output.
 
 ## Exit Codes
 
