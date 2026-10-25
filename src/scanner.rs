@@ -289,25 +289,35 @@ impl LookupEnv {
         }
     }
 
-    /// Executable matches for `candidate` in PATH order.
-    fn iter_binary_matches(&self, candidate: &str) -> Vec<String> {
+    /// Executable matches for `candidate` in PATH order, each with whether
+    /// it was reached only through a relative PATH entry (`.`, an empty
+    /// entry such as a trailing `:`, or `bin`). Such an entry names a
+    /// directory under whatever the working directory happens to be, so a
+    /// match found there is project-local wherever devcap runs.
+    fn iter_binary_matches(&self, candidate: &str) -> Vec<(String, bool)> {
         if candidate.contains('/') {
             return self
                 .which_explicit(candidate)
                 .and_then(|p| self.canonical_executable(&p))
+                .map(|path| (path, false))
                 .into_iter()
                 .collect();
         }
-        let mut matches: Vec<String> = Vec::new();
+        let mut matches: Vec<(String, bool)> = Vec::new();
         for directory in self.path.split(':') {
+            let relative = !directory.starts_with('/');
             let directory = if directory.is_empty() { "." } else { directory };
             let joined = path_join(directory, candidate);
-            if let Some(canonical) = self
+            let Some(canonical) = self
                 .which_explicit(&joined)
                 .and_then(|p| self.canonical_executable(&p))
-                && !matches.contains(&canonical)
-            {
-                matches.push(canonical);
+            else {
+                continue;
+            };
+            match matches.iter_mut().find(|(known, _)| *known == canonical) {
+                // The same file is also reachable through an absolute entry.
+                Some((_, known_relative)) => *known_relative &= relative,
+                None => matches.push((canonical, relative)),
             }
         }
         matches
@@ -318,8 +328,8 @@ impl LookupEnv {
         let mut fallback: Option<String> = None;
         let candidates = std::iter::once(&tool.binary).chain(tool.aliases.iter());
         for candidate in candidates {
-            for path in self.iter_binary_matches(candidate) {
-                if self.is_untrusted_path(&path) {
+            for (path, relative) in self.iter_binary_matches(candidate) {
+                if relative || self.is_untrusted_path(&path) {
                     if include_vendored && fallback.is_none() {
                         fallback = Some(path);
                     }
@@ -943,6 +953,51 @@ mod tests {
         let tool = ToolDef::new("fake-tool", "fake-tool", "Test");
         assert_eq!(lookup.find_binary(&tool, false), None);
         assert_eq!(lookup.find_binary(&tool, true).as_deref(), fake.to_str());
+    }
+
+    #[test]
+    fn relative_path_entries_are_project_local_in_any_directory() {
+        // The working directory has no project markers, which used to make
+        // a binary reached through `.`, an empty entry, or `bin` trusted.
+        let tmp = tempfile::tempdir().unwrap();
+        let cwd = std::fs::canonicalize(tmp.path()).unwrap();
+        fake_tool(&cwd.join("fake-tool"));
+        std::fs::create_dir(cwd.join("bin")).unwrap();
+        fake_tool(&cwd.join("bin").join("other-tool"));
+        let tool = ToolDef::new("fake-tool", "fake-tool", "Test");
+        let other = ToolDef::new("other-tool", "other-tool", "Test");
+        let planted = cwd.join("fake-tool");
+        for path in [
+            ".",
+            "",
+            "/nonexistent-devcap-dir:",
+            ":/nonexistent-devcap-dir",
+        ] {
+            let lookup = env(path, &cwd);
+            assert_eq!(lookup.find_binary(&tool, false), None, "PATH={path:?}");
+            assert_eq!(
+                lookup.find_binary(&tool, true).as_deref(),
+                planted.to_str(),
+                "PATH={path:?}"
+            );
+        }
+        assert_eq!(env("bin", &cwd).find_binary(&other, false), None);
+
+        // A trusted absolute entry later in PATH still wins.
+        let elsewhere = tempfile::tempdir().unwrap();
+        let system = std::fs::canonicalize(elsewhere.path()).unwrap();
+        fake_tool(&system.join("fake-tool"));
+        let lookup = env(&format!(".:{}", system.display()), &cwd);
+        assert_eq!(
+            lookup.find_binary(&tool, false).as_deref(),
+            system.join("fake-tool").to_str()
+        );
+        // The same file reached through an absolute entry as well is trusted.
+        let lookup = env(&format!(".:{}", cwd.display()), &cwd);
+        assert_eq!(
+            lookup.find_binary(&tool, false).as_deref(),
+            planted.to_str()
+        );
     }
 
     #[test]

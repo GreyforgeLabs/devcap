@@ -527,3 +527,41 @@ fn registry_flags_match_real_cli_conventions() {
     assert!(text.contains("\"version\": \"1.8.0\""), "{text}");
     assert!(text.contains("\"source_stream\": \"stderr\""), "{text}");
 }
+
+#[test]
+fn relative_path_entries_are_not_trusted_outside_projects() {
+    // A tool planted in a directory with no project markers, reached through
+    // the empty entry a trailing `:` adds to PATH, must not be executed.
+    let tmp = TempDir::new().unwrap();
+    let ran = tmp.path().join("planted-ran");
+    write_tool(
+        tmp.path(),
+        "planted-tool",
+        &format!("touch '{}'\necho planted-tool 6.6.6\n", ran.display()),
+    );
+    let profile = tmp.path().join("one.toml");
+    fs::write(&profile, "[[tools]]\nname = \"planted-tool\"\n").unwrap();
+    let scan = |extra: &[&str]| {
+        let output = bin()
+            .current_dir(tmp.path())
+            .arg("scan")
+            .arg("--config")
+            .arg(&profile)
+            .args(["--format", "json"])
+            .args(extra)
+            .env("PATH", "/nonexistent-devcap-dir:")
+            .timeout(std::time::Duration::from_secs(60))
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(0));
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let text = scan(&[]);
+    assert!(text.contains("\"found\": false"), "{text}");
+    assert!(
+        !ran.exists(),
+        "devcap ran a tool from a relative PATH entry"
+    );
+    let text = scan(&["--include-vendored"]);
+    assert!(text.contains("\"version\": \"6.6.6\""), "{text}");
+}

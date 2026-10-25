@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+### Fixed
+
+- Binaries reached through a relative PATH entry (`.`, an empty entry such as a leading or trailing `:`, or a relative directory such as `bin`) are treated as project-local and skipped unless `--include-vendored` is set. Before, they were skipped only when the working directory held a project marker, so running devcap in any other directory with such an entry executed a binary planted there. A file that is also reachable through an absolute PATH entry is still found.
+
 ## [0.3.1] - 2026-10-14
 
 ### Fixed
