@@ -185,8 +185,6 @@ AGPL-3.0. See [LICENSE](LICENSE) for details.
 
 ---
 
-<p align="center">
-  <b>Useful?</b> <a href="https://github.com/GreyforgeLabs/devcap">Star devcap on GitHub</a> · <a href="https://x.com/GreyforgeLabs">Follow @GreyforgeLabs</a> · <a href="https://greyforge.tech/open-source">More OpenForge tools at greyforge.tech</a>
-</p>
+<p align="center"><a href="https://greyforge.tech/open-source">More OpenForge tools at greyforge.tech</a></p>
 
 <p align="center"><sub>Background: the <a href="https://greyforge.tech/chronicles/devcap-scanning-your-dev-environment">devcap Chronicle</a> · <a href="https://greyforge.tech/llms.txt">Greyforge llms.txt</a></sub></p>
