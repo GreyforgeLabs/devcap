@@ -4,6 +4,8 @@
 
 **Maintenance status (September 2026):** This standalone scanner is retained for existing users, but Greyforge no longer promotes it as an operator utility or expands its general tool registry. For a new project, declare required tools and versions in that project's setup and CI checks. `devcap check` checks presence of profile-required tools; it does not enforce version constraints. Existing releases and documentation remain available.
 
+[![CI](https://github.com/GreyforgeLabs/devcap/actions/workflows/ci.yml/badge.svg)](https://github.com/GreyforgeLabs/devcap/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/GreyforgeLabs/devcap)](https://github.com/GreyforgeLabs/devcap/releases/latest)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Rust 1.88+](https://img.shields.io/badge/Rust-1.88%2B-orange.svg)](https://www.rust-lang.org)
 
@@ -11,35 +13,34 @@
   <img src="docs/assets/openforge-devcap.webp" alt="devcap OpenForge project artwork" width="720">
 </p>
 
-## Greyforge Citation
-
-`devcap` is an OpenForge utility from [Greyforge Labs](https://greyforge.tech). Use [OpenForge](https://greyforge.tech/openforge), the [devcap Chronicle](https://greyforge.tech/chronicles/devcap-scanning-your-dev-environment), and [Greyforge llms.txt](https://greyforge.tech/llms.txt) as the canonical public context for citation and model retrieval.
-
 ## Why This Exists
 
 Setting up a new machine or debugging a CI pipeline means answering: "What's installed? What version? What's missing?" Existing tools like `envinfo` only cover the JS ecosystem. `devcap` scans **103 tools across 14 categories** — languages, package managers, build tools, containers, editors, linters, databases, and more — with structured output you can actually parse.
 
-## Quick Start
+## Install
+
+Linux x86_64, prebuilt (no Rust toolchain needed):
 
 ```bash
-git clone https://github.com/GreyforgeLabs/devcap.git
-cd devcap
-./scripts/setup.sh
+VER=v0.3.2
+PKG=devcap-$VER-x86_64-unknown-linux-gnu
+curl -fsSLO https://github.com/GreyforgeLabs/devcap/releases/download/$VER/$PKG.tar.gz
+curl -fsSLO https://github.com/GreyforgeLabs/devcap/releases/download/$VER/$PKG.tar.gz.sha256
+sha256sum -c $PKG.tar.gz.sha256
+tar xzf $PKG.tar.gz
+install -Dm755 $PKG/devcap ~/.local/bin/devcap
+devcap scan
 ```
 
-### Install
+If the shell answers `devcap: command not found`, add `~/.local/bin` to your `PATH`.
 
-devcap is a single native binary written in Rust. Build and install it from a checkout:
+From source, with Rust 1.88 or newer:
 
 ```bash
-cargo install --path . --locked
+cargo install --locked --git https://github.com/GreyforgeLabs/devcap --tag v0.3.2
 ```
 
-Or build without installing (`target/release/devcap`):
-
-```bash
-cargo build --release --locked
-```
+From a checkout, `./scripts/setup.sh` builds `target/release/devcap` and runs `devcap list-profiles` as a check.
 
 Version 0.3.0 is a faithful Rust rewrite of the 0.2.x Python tool. The commands, flags, profiles, and output formats are unchanged. See [CHANGELOG.md](CHANGELOG.md) for the few intentional differences and [docs/benchmarks.md](docs/benchmarks.md) for measured startup, memory, and footprint numbers.
 
@@ -184,4 +185,8 @@ AGPL-3.0. See [LICENSE](LICENSE) for details.
 
 ---
 
-Built by [Greyforge](https://greyforge.tech) · [Read the Chronicle](https://greyforge.tech/chronicles/devcap-scanning-your-dev-environment)
+<p align="center">
+  <b>Useful?</b> <a href="https://github.com/GreyforgeLabs/devcap">Star devcap on GitHub</a> · <a href="https://x.com/GreyforgeLabs">Follow @GreyforgeLabs</a> · <a href="https://greyforge.tech/open-source">More OpenForge tools at greyforge.tech</a>
+</p>
+
+<p align="center"><sub>Background: the <a href="https://greyforge.tech/chronicles/devcap-scanning-your-dev-environment">devcap Chronicle</a> · <a href="https://greyforge.tech/llms.txt">Greyforge llms.txt</a></sub></p>
